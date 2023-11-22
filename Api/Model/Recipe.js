@@ -130,10 +130,11 @@ const db = new sqlite3.Database('DB_Notebook.db');
 
 
 static searchRecipes(Nom_Recipe, callback) {
+  const fuzzyTerm = `%${Nom_Recipe}%`
     const db = new sqlite3.Database('DB_Notebook.db');
     db.all(
       'SELECT * FROM Recipe WHERE Nom_Recipe LIKE ?',
-      [Nom_Recipe],
+      [fuzzyTerm],
       (err, rows) => {
         if (err) {
           callback(err, null);

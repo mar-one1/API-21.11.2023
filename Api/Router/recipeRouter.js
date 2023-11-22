@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Recipe = require('../Model/Recipe'); // Import the Recipe model
+const Fuse = require('fuse.js');
 
 // Create a recipe
 router.post('/', (req, res) => {
@@ -64,6 +65,8 @@ router.get('/user/:id', (req, res) => {
     res.json(recipes);
   });
 });
+
+
 
 router.get('/search/nom', (req, res) =>  {
   const searchTerm = req.query.key;
