@@ -77,6 +77,40 @@ class User
       db.close();
     }
 
+    static getUserById(id, callback) {
+      const db = new sqlite3.Database('DB_Notebook.db');
+      db.get(
+        'SELECT * FROM User WHERE Id_user = ?',
+        [id],
+        (err, row) => {
+          if (err) {
+            callback(err, null);
+            return;
+          }
+          if (!row) {
+            callback(null, null); // User not found
+            return;
+          }
+          const user = new User(
+            row.Id_user,
+            row.username,
+            row.Firstname_user,
+            row.Lastname_user,
+            row.Birthday_user,
+            row.Email_user,
+            row.Phonenumber_user,
+            row.Icon_user,
+            row.password,
+            row.Grade_user,
+            row.Status_user
+          );
+          callback(null, user);
+        }
+      );
+      db.close();
+    }
+  
+
     static UpdateUserImage(
       username,
       imagebyte,

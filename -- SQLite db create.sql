@@ -2,6 +2,7 @@
 -- Create the User table
 CREATE TABLE User (
     Id_user INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT,
     Firstname_user TEXT,
     Lastname_user TEXT,
     Birthday_user TEXT,
@@ -10,7 +11,8 @@ CREATE TABLE User (
     Icon_user INTEGER,
     Password_user TEXT,
     Grade_user INTEGER,
-    Status_user INTEGER
+    Status_user INTEGER,
+    CONSTRAINT unique_username UNIQUE (username)
 );
 
 -- Create the Recipe table

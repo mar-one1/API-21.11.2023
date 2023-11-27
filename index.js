@@ -4,9 +4,7 @@ const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('DB_Notebook.db'); //database file name
 const port = process.env.PORT || 3000;
-
-
-
+const multer = require('multer');
 
 const authRouter = require('./Api/Router/auth_Router');
 // Import the verifyToken middleware
@@ -23,7 +21,11 @@ const produitRouter = require('./Api/Router/produit_Router');
 
 // ...
 // Middleware for parsing JSON request bodies
-app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 // Apply the middleware to all routes
@@ -54,6 +56,8 @@ db.serialize(() => {
   app.get('/protected', verifyToken, (req, res) => {
     res.json({ message: 'This route is protected', user: req.user, token: req.newAccessToken});
   });
+
+
 
 
  

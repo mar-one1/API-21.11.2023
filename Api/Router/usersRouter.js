@@ -5,7 +5,8 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage,dest: 'uploads/' });
+
 // Use multer as middleware to handle multipart/form-data requests
 router.use(upload.any());
 router.use(bodyParser.json());
@@ -48,7 +49,8 @@ router.post('/', async (req, res) => {
   );
 });
 
-router.put('/image/:username', async (req, res) => {
+router.put('/image/:username', upload.single('avatar'), async (req, res) => {
+  console.log(req.file,req.file.path)
   const username = req.params.username;
   const receivedByteArray = req.body;
   User.UpdateUserImage(username,receivedByteArray,(err, validite) => {
