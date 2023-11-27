@@ -91,6 +91,22 @@ console.log(username)
   });
 });
 
+// Get a user by image user
+router.get('/image/:username', (req, res) => {
+  const username = req.params.username;
+console.log("username for image is : " +username)
+  User.getUserImage(username, (err, imageByte) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!imageByte) {
+      return res.status(404).json({ error: 'image not found' });
+    } 
+    console.log(imageByte);
+    res.json(imageByte);
+  });
+});
+
 // get All Users
 router.get('/', (req, res) => {
   User.getAllUsers((err, users) => {
