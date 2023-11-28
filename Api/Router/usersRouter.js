@@ -64,7 +64,7 @@ router.put('/image/:username', async (req, res) => {
 // Get a user by ID
 router.get('/:id', (req, res) => {
   const userId = req.params.id;
-
+  
   User.getUserById(userId, (err, user) => {
     if (err) {
       return res.status(500).json({ error: err.message });
