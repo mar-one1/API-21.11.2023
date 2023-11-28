@@ -4,12 +4,22 @@ const User = require('../Model/User');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage,dest: 'uploads/' });
-
+const upload = multer({ dest: 'uploads/' })
 // Use multer as middleware to handle multipart/form-data requests
-router.use(upload.any());
-router.use(bodyParser.json());
+//router.use(upload.any());
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
+//router.use(bodyParser.json());
+
+router.post('/upload', upload.single('image'), (req, res) => {
+  console.log(req.body);
+  console.log(req.file);
+  if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+  }
+  // Process the uploaded file
+  res.send('File uploaded successfully.');
+});
 
 // Create a new user
 router.post('/', async (req, res) => {
