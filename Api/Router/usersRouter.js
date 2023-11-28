@@ -11,6 +11,17 @@ router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 //router.use(bodyParser.json());
 
+/*const storage = multer.diskStorage({
+  destination: './public/data/uploads/', // Destination directory
+  filename: function (req, file, cb) {
+      // Define a custom file name (you can modify this logic)
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+const upload = multer({ storage: storage });
+});*/
+
+
 router.post('/upload', upload.single('image'), (req, res) => {
   console.log(req.body);
   console.log(req.file);
@@ -18,7 +29,8 @@ router.post('/upload', upload.single('image'), (req, res) => {
       return res.status(400).send('No file uploaded.');
   }
   // Process the uploaded file
-  res.send('File uploaded successfully.');
+  res.status(200).json(req.file.path);
+  //res.send('File uploaded successfully.');
 });
 
 // Create a new user
