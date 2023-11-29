@@ -5,6 +5,8 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('DB_Notebook.db'); //database file name
 const port = process.env.PORT || 3000;
 const multer = require('multer');
+const path = require('path');
+app.use(express.static('public'));
 
 const authRouter = require('./Api/Router/auth_Router');
 // Import the verifyToken middleware
@@ -26,6 +28,8 @@ app.use(
     extended: true,
   })
 );
+
+
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 // Apply the middleware to all routes
@@ -58,6 +62,7 @@ db.serialize(() => {
   });
 
 
+// Serving static files from the 'public' directory
 
 
  

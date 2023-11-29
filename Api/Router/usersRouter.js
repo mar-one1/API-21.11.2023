@@ -4,34 +4,25 @@ const User = require('../Model/User');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' })
+//const upload = multer({ dest: 'uploads/'});
 // Use multer as middleware to handle multipart/form-data requests
 //router.use(upload.any());
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 //router.use(bodyParser.json());
 
-/*const storage = multer.diskStorage({
-  destination: './public/data/uploads/', // Destination directory
+const storage = multer.diskStorage({
+  destination: './public/uploads/', // Destination directory
   filename: function (req, file, cb) {
       // Define a custom file name (you can modify this logic)
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       cb(null, uniqueSuffix + '-' + file.originalname);
   }
-const upload = multer({ storage: storage });
-});*/
-
-
-router.post('/upload', upload.single('image'), (req, res) => {
-  console.log(req.body);
-  console.log(req.file);
-  if (!req.file) {
-      return res.status(400).send('No file uploaded.');
-  }
-  // Process the uploaded file
-  res.status(200).json(req.file.path);
-  //res.send('File uploaded successfully.');
+//const upload = multer({ storage: storage });
 });
+
+const upload = multer({ dest: 'uploads/', storage: storage})
+
 
 // Create a new user
 router.post('/', async (req, res) => {
@@ -69,6 +60,29 @@ router.post('/', async (req, res) => {
       res.status(201).json(newUser);
     }
   );
+});
+
+router.post('/upload/:username', upload.single('image'), (req, res) => {
+  
+  const username = req.params.username;
+  console.log(req.body);
+  console.log(req.file);
+  if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+  }
+  // Process the uploaded file
+  const fileName = req.file.filename;
+  const imageUrl = encodeURIComponent(fileName);
+  User.UpdateUserImage(username,imageUrl,(err, validite) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  // If the user doesn't exist, add them to the database
+    res.status(201).json(validite);
+  }
+);
+  //res.status(200).json(req.file.path);
+  //res.send('File uploaded successfully.');
 });
 
 router.put('/image/:username', upload.single('avatar'), async (req, res) => {
