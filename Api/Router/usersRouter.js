@@ -5,12 +5,9 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 //const upload = multer({ dest: 'uploads/'});
-// Use multer as middleware to handle multipart/form-data requests
-//router.use(upload.any());
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 //router.use(bodyParser.json());
-
 const storage = multer.diskStorage({
   destination: './public/uploads/', // Destination directory
   filename: function (req, file, cb) {
@@ -20,9 +17,7 @@ const storage = multer.diskStorage({
   }
 //const upload = multer({ storage: storage });
 });
-
 const upload = multer({ dest: 'uploads/', storage: storage})
-
 
 // Create a new user
 router.post('/', async (req, res) => {
@@ -53,17 +48,13 @@ router.post('/', async (req, res) => {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
-      
-
     // If the user doesn't exist, add them to the database
-
       res.status(201).json(newUser);
     }
   );
 });
 
 router.post('/upload/:username', upload.single('image'), (req, res) => {
-  
   const username = req.params.username;
   console.log(req.body);
   console.log(req.file);
@@ -79,24 +70,7 @@ router.post('/upload/:username', upload.single('image'), (req, res) => {
     }
   // If the user doesn't exist, add them to the database
     res.status(201).json(validite);
-  }
-);
-  //res.status(200).json(req.file.path);
-  //res.send('File uploaded successfully.');
-});
-
-router.put('/image/:username', upload.single('avatar'), async (req, res) => {
-  console.log(req.file,req.file.path)
-  const username = req.params.username;
-  const receivedByteArray = req.body;
-  User.UpdateUserImage(username,receivedByteArray,(err, validite) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-    // If the user doesn't exist, add them to the database
-      res.status(201).json(validite);
-    }
-  );
+  });
 });
 
 // Get a user by ID

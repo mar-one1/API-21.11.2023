@@ -164,12 +164,18 @@ class User
         (err, row) => {
           if (err) {
             callback(err, null);
+            db.close(); // Close the database connection in case of an error
             return;
           }
           if (!row) {
             callback(null, null); // User not found
+            db.close(); // Close the database connection if the user is not found
             return;
           }
+          
+          const byteArray = Buffer.from(row.Icon_user , 'utf8');
+          const str = byteArray.toString('utf8'); // For UTF-8 encoding
+          console.log("str: " + str);
           const user = new User(
             row.Id_user,
             row.username,
@@ -184,9 +190,10 @@ class User
             row.Status_user
           );
           callback(null, user);
+          db.close(); // Close the database connection after the operation is completed
         }
       );
-      db.close();
+      // db.close() should not be placed here; it should be inside the callback function
     }
 
     static getAllUsers(callback) {
