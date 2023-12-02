@@ -99,7 +99,7 @@ class User
             row.Birthday_user,
             row.Email_user,
             row.Phonenumber_user,
-            row.Icon_user,
+            row.Icon_user=null,
             row.password,
             row.Grade_user,
             row.Status_user

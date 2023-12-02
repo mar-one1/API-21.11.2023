@@ -86,7 +86,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
     db.get(
       'SELECT Frk_user FROM Recipe WHERE Id_recipe = ?',
       [recipeId],
-      (err, row) => {
+      (err, row) => {C
         if (err) {
           callback(err, null);
           return;
