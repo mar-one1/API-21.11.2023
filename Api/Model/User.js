@@ -2,6 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+
 class User
 {
     constructor(
@@ -116,6 +117,7 @@ class User
       imagebyte,
       callback
     ) {
+
       
       const db = new sqlite3.Database('DB_Notebook.db');
       db.run(

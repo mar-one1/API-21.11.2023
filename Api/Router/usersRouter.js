@@ -4,6 +4,7 @@ const User = require('../Model/User');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
+const fs = require('fs');
 //const upload = multer({ dest: 'uploads/'});
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
