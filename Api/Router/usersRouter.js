@@ -55,7 +55,17 @@ router.post('/', async (req, res) => {
   );
 });
 
-router.post('/upload/:username', upload.single('image'), (req, res) => {
+router.delete('/delete/:path', (req, res) => {
+  const pathimage = req.params.path;
+  User.deleteimage(pathimage,(err, validite) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json(validite);
+  });
+})
+
+router.post('/upload/:username', upload.single('image'),async  (req, res) => {
   const username = req.params.username;
   console.log(req.body);
   console.log(req.file);
@@ -65,6 +75,8 @@ router.post('/upload/:username', upload.single('image'), (req, res) => {
   // Process the uploaded file
   const fileName = req.file.filename;
   const imageUrl = encodeURIComponent(fileName);
+  console.log(username);
+
   User.UpdateUserImage(username,imageUrl,(err, validite) => {
     if (err) {
       return res.status(500).json({ error: err.message });

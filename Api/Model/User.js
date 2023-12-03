@@ -1,6 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const fs = require('fs');
+    const path = require('path');
 
 
 class User
@@ -112,13 +114,11 @@ class User
     }
   
 
-    static UpdateUserImage(
+    static async UpdateUserImage(
       username,
       imagebyte,
       callback
     ) {
-
-      
       const db = new sqlite3.Database('DB_Notebook.db');
       db.run(
         'UPDATE User SET Icon_user = ? WHERE username = ?',
@@ -156,6 +156,7 @@ class User
               callback(null, row.Icon_user);
           }
       );
+    
     }
   
     static getUserByUsername(usernameUser, callback) {
@@ -197,7 +198,26 @@ class User
       );
       // db.close() should not be placed here; it should be inside the callback function
     }
+    
+    static deleteimage(pathimage, callback) {    
+    const filePathToDelete = './public/uploads/' +pathimage; // Replace with the path to the file you want to delete
+    // Check if the file exists
+    fs.access(filePathToDelete, fs.constants.F_OK, (err) => {
+      if (err) {
+        console.error('File does not exist or cannot be accessed.');
+        return;
+      }
 
+      // File exists, proceed to delete
+      fs.unlink(filePathToDelete, (unlinkErr) => {
+        if (unlinkErr) {
+          console.error('Error deleting file:', unlinkErr);
+          return;
+        }
+        console.log('File deleted successfully.');
+      });
+    });
+}
     static getAllUsers(callback) {
       const db = new sqlite3.Database('DB_Notebook.db');
       db.all('SELECT * FROM User', (err, rows) => {
