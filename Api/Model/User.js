@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const fs = require('fs');
     const path = require('path');
+const { isNull } = require('util');
 
 
 class User
@@ -179,6 +180,9 @@ class User
           const byteArray = Buffer.from(row.Icon_user , 'utf8');
           const str = byteArray.toString('utf8'); // For UTF-8 encoding
           console.log("str: " + str);
+
+          let yourString = row.Icon_user ;
+          let byteArray1 = Buffer.from(yourString, 'utf8');
           const user = new User(
             row.Id_user,
             row.username,
