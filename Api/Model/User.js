@@ -103,7 +103,7 @@ class User
             row.Birthday_user,
             row.Email_user,
             row.Phonenumber_user,
-            row.Icon_user=null,
+            Icon_user=null,
             row.password,
             row.Grade_user,
             row.Status_user
@@ -183,6 +183,8 @@ class User
 
           let yourString = row.Icon_user ;
           let byteArray1 = Buffer.from(yourString, 'utf8');
+          console.log(byteArray1);
+          const iconUser = (row.Icon_user !== null) ? row.Icon_user : null;
           const user = new User(
             row.Id_user,
             row.username,
