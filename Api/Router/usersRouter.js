@@ -57,6 +57,7 @@ router.post('/', async (req, res) => {
 
 router.delete('/delete/:path', (req, res) => {
   const pathimage = req.params.path;
+  console.log('path for delete '+pathimage);
   User.deleteimage(pathimage,(err, validite) => {
     if (err) {
       return res.status(500).json({ error: err.message });

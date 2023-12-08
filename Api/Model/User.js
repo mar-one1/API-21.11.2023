@@ -103,7 +103,7 @@ class User
             row.Birthday_user,
             row.Email_user,
             row.Phonenumber_user,
-            Icon_user=null,
+            row.Icon_user=null,
             row.password,
             row.Grade_user,
             row.Status_user
@@ -131,7 +131,8 @@ class User
           }
 
         // If the user doesn't exist, add them to the database
-          callback(null, username);
+          callback(null, imagebyte);
+          console.log(imagebyte);
         });
       db.close();
     }
@@ -168,23 +169,12 @@ class User
         (err, row) => {
           if (err) {
             callback(err, null);
-            db.close(); // Close the database connection in case of an error
             return;
           }
           if (!row) {
             callback(null, null); // User not found
-            db.close(); // Close the database connection if the user is not found
             return;
           }
-          
-          const byteArray = Buffer.from(row.Icon_user , 'utf8');
-          const str = byteArray.toString('utf8'); // For UTF-8 encoding
-          console.log("str: " + str);
-
-          let yourString = row.Icon_user ;
-          let byteArray1 = Buffer.from(yourString, 'utf8');
-          console.log(byteArray1);
-          const iconUser = (row.Icon_user !== null) ? row.Icon_user : null;
           const user = new User(
             row.Id_user,
             row.username,
@@ -199,15 +189,15 @@ class User
             row.Status_user
           );
           callback(null, user);
-          db.close(); // Close the database connection after the operation is completed
         }
       );
-      // db.close() should not be placed here; it should be inside the callback function
+      db.close();
     }
     
     static deleteimage(pathimage, callback) {    
     const filePathToDelete = './public/uploads/' +pathimage; // Replace with the path to the file you want to delete
     // Check if the file exists
+    console.log('path for delete '+filePathToDelete);
     fs.access(filePathToDelete, fs.constants.F_OK, (err) => {
       if (err) {
         console.error('File does not exist or cannot be accessed.');
@@ -221,6 +211,7 @@ class User
           return;
         }
         console.log('File deleted successfully.');
+        callback(null, 'File deleted successfully.');
       });
     });
 }
