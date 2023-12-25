@@ -145,6 +145,23 @@ router.get('/', (req, res) => {
 
 // Add more user routes as needed
 
+router.put('/image/:username', (req, res) => {
+  const username = req.params.username;
+  const url =req.body;
+  const imageurl = url.url;
+  console.log(req.body);
+  console.log(username);
+  User.UpdateUserImage(username,imageurl,(err,path) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!path) {
+      return res.status(404).json({ error: 'User not found or not updated' });
+    }
+    res.json(path);
+  });
+})
+
 // Update a user by ID
 router.put('/:id', (req, res) => {
   const userId = req.params.id;
