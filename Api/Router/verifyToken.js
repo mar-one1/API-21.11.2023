@@ -38,7 +38,7 @@ function verifyToken(req, res, next) {
           // Continue processing the request with the new access token
           next();
         });
-      } else {
+      } else { 
         return res.status(401).json({ message: 'Token authentication failed' });
       }
     } else {
