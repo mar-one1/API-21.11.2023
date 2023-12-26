@@ -147,8 +147,8 @@ router.get('/', (req, res) => {
 
 router.put('/image/:username', (req, res) => {
   const username = req.params.username;
-  const url =req.body;
-  const imageurl = url.url;
+  const {url} =req.body;
+  const imageurl = url;
   console.log(req.body);
   console.log(username);
   User.UpdateUserImage(username,imageurl,(err,path) => {

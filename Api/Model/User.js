@@ -129,7 +129,10 @@ class User
             callback(err);
             return;
           }
-
+          if (this.changes === 0) {
+            callback(null, null); // User not found or not updated
+            return;
+          }
         // If the user doesn't exist, add them to the database
           callback(null, imagebyte);
           console.log(imagebyte);
