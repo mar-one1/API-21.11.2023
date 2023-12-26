@@ -156,7 +156,7 @@ router.put('/image/:username', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!path) {
-      return res.status(404).json({ error: 'User not found or not updated' });
+      return res.status(404).json({ error: 'User not found or not updated!!' });
     }
     res.json(path);
   });
