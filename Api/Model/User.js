@@ -33,6 +33,7 @@ class User
       this.grade = grade;
       this.status = status;
     }
+    
   
     
     static createUser(
@@ -48,36 +49,54 @@ class User
       status,
       callback
     ) {
-      
-      
       const db = new sqlite3.Database('DB_Notebook.db');
-      db.run(
-        'INSERT INTO User (username,Firstname_user, Lastname_user, Birthday_user, Email_user, Phonenumber_user, Icon_user, password, Grade_user, Status_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)',
-        [username,firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status],
-        function (err) {
+    
+      // Check if the user already exists
+      db.get(
+        'SELECT UserID FROM User WHERE username = ?',
+        [username],
+        function (err, row) {
           if (err) {
             callback(err);
             return;
           }
-
-        
-        // If the user doesn't exist, add them to the database
-      
-          const newUser = new User(
-            this.lastID,
-            username,
-            firstname,
-            lastname,
-            birthday,
-            email,
-            phoneNumber,
-            icon,
-            password,
-            grade,
-            status
+    
+          if (row) {
+            // User already exists, handle accordingly (e.g., return an error)
+            callback(new Error('User already exists'));
+            return;
+          }
+    
+          // User doesn't exist, insert them into the database
+          db.run(
+            'INSERT INTO User (username, Firstname_user, Lastname_user, Birthday_user, Email_user, Phonenumber_user, Icon_user, password, Grade_user, Status_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [username, firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status],
+            function (err) {
+              if (err) {
+                callback(err);
+                return;
+              }
+    
+              // Fetch the inserted user
+              const newUser = new User(
+                this.lastID,
+                username,
+                firstname,
+                lastname,
+                birthday,
+                email,
+                phoneNumber,
+                icon,
+                password,
+                grade,
+                status
+              );
+              callback(null, newUser);
+            }
           );
-          callback(null, newUser);
-        });
+        }
+      );
+    
       db.close();
     }
 

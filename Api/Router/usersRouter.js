@@ -46,9 +46,11 @@ router.post('/', async (req, res) => {
     grade,
     status,
     (err, newUser) => {
+      
       if (err) {
-        return res.status(500).json({ error: err.message });
+        return res.status(409).json({ error: err.message });
       }
+      
     // If the user doesn't exist, add them to the database
       res.status(201).json(newUser);
     }
