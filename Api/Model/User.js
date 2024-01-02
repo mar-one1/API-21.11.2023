@@ -53,7 +53,7 @@ class User
     
       // Check if the user already exists
       db.get(
-        'SELECT UserID FROM User WHERE username = ?',
+        'SELECT Id_user FROM User WHERE username = ?',
         [username],
         function (err, row) {
           if (err) {
