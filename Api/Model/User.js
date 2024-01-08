@@ -54,11 +54,7 @@ class User
       console.log(name);
       // Check if the user already exists
       db.get(
-<<<<<<< HEAD
-        'SELECT * FROM User WHERE username = ?',
-=======
-        'SELECT Id_user FROM User WHERE username = ?',
->>>>>>> 81efa6ef8d717c2b4847963ae5ce2197f8e39642
+        'SELECT * FROM User WHERE username = ?'
         [username],
         function (err, row) {
           if (err) {
