@@ -53,7 +53,7 @@ class User
     
       // Check if the user already exists
       db.get(
-        'SELECT UserID FROM User WHERE username = ?',
+        'SELECT * FROM User WHERE username = ?',
         [username],
         function (err, row) {
           if (err) {
@@ -62,6 +62,7 @@ class User
           }
     
           if (row) {
+            console.log("User already exists");
             // User already exists, handle accordingly (e.g., return an error)
             callback(new Error('User already exists'));
             return;
