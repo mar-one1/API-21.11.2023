@@ -50,10 +50,15 @@ class User
       callback
     ) {
       const db = new sqlite3.Database('DB_Notebook.db');
-    
+      const name = username.toUpperCase();
+      console.log(name);
       // Check if the user already exists
       db.get(
+<<<<<<< HEAD
         'SELECT * FROM User WHERE username = ?',
+=======
+        'SELECT Id_user FROM User WHERE username = ?',
+>>>>>>> 81efa6ef8d717c2b4847963ae5ce2197f8e39642
         [username],
         function (err, row) {
           if (err) {
@@ -64,7 +69,7 @@ class User
           if (row) {
             console.log("User already exists");
             // User already exists, handle accordingly (e.g., return an error)
-            callback(new Error('User already exists'));
+            callback(new Error('User already exists')); 
             return;
           }
     
