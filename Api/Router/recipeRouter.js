@@ -2,10 +2,20 @@ const express = require('express');
 const router = express.Router();
 const Recipe = require('../Model/Recipe'); // Import the Recipe model
 const Fuse = require('fuse.js');
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
 
 // Create a recipe
-router.post('/', (req, res) => {
-  const { name, icon, fav, userId } = req.body;
+router.post('/', async (req, res) => {
+  const {
+     name,
+      icon,
+       fav,
+        userId
+       } = req.body;
+       console.log(name);
+       console.log(icon);
+       console.log(fav);
   Recipe.createRecipe(name, icon, fav, userId, (err, newRecipe) => {
     if (err) {
       return res.status(500).json({ error: err.message });
