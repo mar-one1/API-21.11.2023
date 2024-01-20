@@ -59,7 +59,7 @@ router.get('/:id/detailrecipe', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!detailRecipe) {
-      return res.status(404).json({ error: 'Recipe not found' });
+      return res.status(404).json({ error: 'Detail Recipe not found' });
     }
     res.json(detailRecipe);
   });
