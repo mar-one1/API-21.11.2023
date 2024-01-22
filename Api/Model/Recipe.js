@@ -60,6 +60,53 @@ const db = new sqlite3.Database('DB_Notebook.db');
     db.close();
   }
 
+  static deleteimage(pathimage, callback) {    
+    const filePathToDelete = './public/uploads/' +pathimage; // Replace with the path to the file you want to delete
+    // Check if the file exists
+    console.log('path for delete '+filePathToDelete);
+    fs.access(filePathToDelete, fs.constants.F_OK, (err) => {
+      if (err) {
+        console.error('File does not exist or cannot be accessed.');
+        return;
+      }
+
+      // File exists, proceed to delete
+      fs.unlink(filePathToDelete, (unlinkErr) => {
+        if (unlinkErr) {
+          console.error('Error deleting file:', unlinkErr);
+          return;
+        }
+        console.log('File deleted successfully.');
+        callback(null, 'File deleted successfully.');
+      });
+    });
+  }
+
+  static async UpdateRecipeImage(
+    id,
+    imagebyte,
+    callback
+  ) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    db.run(
+      'UPDATE Recipe SET Icon_recipe = ? WHERE Id_recipe = ?',
+      [imagebyte,id],
+      function (err) {
+        if (err) {
+          callback(err);
+          return;
+        }
+        if (this.changes === 0) {
+          callback(null, null); // User not found or not updated
+          return;
+        }
+      // If the user doesn't exist, add them to the database
+        callback(null, imagebyte);
+        console.log(imagebyte);
+      });
+    db.close();
+  }
+
   static getAllRecipes(callback) {
     const db = new sqlite3.Database('DB_Notebook.db');
     db.all('SELECT * FROM Recipe', (err, rows) => {
