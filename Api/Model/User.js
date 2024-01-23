@@ -282,7 +282,7 @@ class User
             return;
           }
           const updatedUser = new User(
-            UserId,
+            id,
             username,
             firstname,
             lastname,
@@ -301,6 +301,7 @@ class User
   
     static updateUserByUsername(username,firstname,lastname,birthday,email,phoneNumber,icon,password,grade,status, callback) {
       const db = new sqlite3.Database('DB_Notebook.db');
+      console.log("test"+username);
       db.run(
         'UPDATE User SET Firstname_user = ?, Lastname_user = ?, Birthday_user = ?, Email_user = ?, Phonenumber_user = ?, Icon_user = ?, password = ?, Grade_user = ?, Status_user = ? WHERE username = ?',
         [firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, username],
@@ -326,6 +327,7 @@ class User
             grade,
             status
             );
+            console.log(updatedUser);
           callback(null, updatedUser);
           });
       db.close();
@@ -347,6 +349,7 @@ class User
             return;
           }
           const updatedUser = new User(
+            id,
             username,
             firstname,
             lastname,

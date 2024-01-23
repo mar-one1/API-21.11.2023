@@ -191,7 +191,7 @@ router.put('/:id', (req, res) => {
 });
 
 // Update a user by USERNAME
-router.put('/filtre/:username', (req, res) => {
+router.put('/filtre/:username', async (req, res) => {
   const username = req.params.username;
   console.log(username);
   const {

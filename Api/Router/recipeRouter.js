@@ -7,7 +7,7 @@ router.use(express.urlencoded({ extended: true }));
 const multer = require('multer');
 
 const storage = multer.diskStorage({
-  destination: './public/data/', // Destination directory
+  destination: './public/data/uploads', // Destination directory
   filename: function (req, file, cb) {
       // Define a custom file name (you can modify this logic)
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
