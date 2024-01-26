@@ -299,40 +299,50 @@ class User
       db.close();
     }
   
-    static updateUserByUsername(username,firstname,lastname,birthday,email,phoneNumber,icon,password,grade,status, callback) {
-      const db = new sqlite3.Database('DB_Notebook.db');
-      console.log("test"+username);
-      db.run(
+    static updateUserByUsername(username, firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    console.log("test" + username);
+    
+    db.run(
         'UPDATE User SET Firstname_user = ?, Lastname_user = ?, Birthday_user = ?, Email_user = ?, Phonenumber_user = ?, Icon_user = ?, password = ?, Grade_user = ?, Status_user = ? WHERE username = ?',
         [firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, username],
         function (err) {
-          if (err) {
-            callback(err);
-            return;
-          }
-          if (this.changes === 0) {
-            const error = new Error('User not found or not updated');
-            callback(error, null);
-            return;
-          }
-          const updatedUser = new User(
-            username,
-            firstname,
-            lastname,
-            birthday,
-            email,
-            phoneNumber,
-            icon,
-            password,
-            grade,
-            status
+            if (err) {
+                callback(err);
+                db.close(); // Close the database connection in case of an error
+                return;
+            }
+
+            if (this.changes === 0) {
+                const error = new Error('User not found or not updated');
+                callback(error, null);
+                db.close(); // Close the database connection if no rows were updated
+                return;
+            }
+
+            const id = this.lastID; // Use `this.lastID` to get the ID of the last inserted row
+            console.log(`Row(s) updated: ${this.changes}` + 'id : ' + id);
+
+            const updatedUser = new User(
+                id,
+                username,
+                firstname,
+                lastname,
+                birthday,
+                email,
+                phoneNumber,
+                icon,
+                password,
+                grade,
+                status
             );
             console.log(updatedUser);
-          callback(null, updatedUser);
-          });
-      db.close();
-    }
+            callback(null, updatedUser);
 
+            db.close(); // Close the database connection after the update
+        }
+    );
+}
     static updateImageUserByUsername(username,icon, callback) {
       const db = new sqlite3.Database('DB_Notebook.db');
       db.run(

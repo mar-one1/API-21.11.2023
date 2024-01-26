@@ -10,7 +10,7 @@ class Recipe {
     this.userId = userId;
   }
 
-  static createRecipe(name, icon, fav, userId, callback) {
+static createRecipe(name, icon, fav, userId, callback) {
 const db = new sqlite3.Database('DB_Notebook.db');
     db.run(
       'INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe, Frk_user) VALUES (?, ?, ?, ?)',
