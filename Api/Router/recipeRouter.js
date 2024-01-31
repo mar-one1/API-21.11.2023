@@ -71,7 +71,7 @@ router.post('/upload/:id', upload.single('image'),async  (req, res) => {
 // Get a recipe by ID
 router.get('/:id', (req, res) => {
   const recipeId = req.params.id;
-  Recipe.getRecipeById(recipeId, (err, recipe) => {
+  Recipe.getFullRecipeById(recipeId, (err, recipe) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }

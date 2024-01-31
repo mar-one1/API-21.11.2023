@@ -18,7 +18,8 @@
     "fuse.js": "^7.0.0",
     "http-server": "^14.1.1",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.0.4",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.1.1",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.1",
     "sqlite3": "^5.1.6"

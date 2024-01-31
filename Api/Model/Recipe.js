@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const UserModel = require('./User'); // Import the User model
-
+const DetailRecipeModel = require('./Detail_recipe'); // Import the User model
+const IngredientModel = require('./Ingredient_recipe'); // Import the User model
 class Recipe {
   constructor(id, name, icon, fav, userId) {
     this.id = id;
@@ -33,7 +34,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
     db.close();
   }
 
-  static getRecipeById(id, callback) {
+  /*static getRecipeById(id, callback) {
 const db = new sqlite3.Database('DB_Notebook.db');
     db.get(
       'SELECT * FROM Recipe WHERE Id_recipe = ?',
@@ -58,7 +59,63 @@ const db = new sqlite3.Database('DB_Notebook.db');
       }
     );
     db.close();
+  }*/
+
+  static getFullRecipeById(id, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    const sql = `
+      SELECT Recipe.*, Detail_recipe.*, Ingredient_recipe.*
+      FROM Recipe
+      LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
+      LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
+      WHERE Recipe.Id_recipe = ?
+    `;
+  
+    db.all(sql, [id], (err, rows) => {
+      if (err) {
+        callback(err, null);
+        return;
+      }
+      if (!rows || rows.length === 0) {
+        callback(null, null); // Recipe not found
+        return;
+      }
+  
+      const recipe = new Recipe(
+        rows[0].Id_recipe,
+        rows[0].Nom_Recipe,
+        rows[0].Icon_recipe,
+        rows[0].Fav_recipe,
+        rows[0].Frk_user
+      );
+  
+      const detailRecipe = new DetailRecipeModel(
+        rows[0].Id_detail_recipe,
+        rows[0].Dt_recipe,
+        rows[0].Dt_recipe_time,
+        rows[0].Rate_recipe,
+        rows[0].Level_recipe,
+        rows[0].Calories_recipe,
+        rows[0].FRK_recipe
+      );
+  
+      // Map over the ingredients for all rows
+      const ingredients = rows.map((row) => {
+        return new IngredientModel(
+          row.Id_Ingredient_recipe,
+          row.Ingredient_recipe,
+          row.PoidIngredient_recipe,
+          row.FRK_recipe
+        );
+      });
+  
+      // Assuming you have appropriate constructors for DetailRecipe and Ingredient
+      callback(null, { recipe, detailRecipe, ingredients });
+    });
+  
+    db.close();
   }
+  
 
   static deleteimage(pathimage, callback) {    
     const filePathToDelete = './public/uploads/' +pathimage; // Replace with the path to the file you want to delete
