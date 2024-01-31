@@ -5,9 +5,30 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const fs = require('fs');
-//const upload = multer({ dest: 'uploads/'});
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
+const { UserRepository } = require('../Repo/UserRepository'); // Replace with the actual path
+
+// Get a user by ID
+router.get('/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    await UserRepository.getUserById(userId, (err, user) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.json(user);
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 //router.use(bodyParser.json());
 const storage = multer.diskStorage({
   destination: './public/uploads/', // Destination directory
