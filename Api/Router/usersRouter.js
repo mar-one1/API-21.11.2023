@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const fs = require('fs');
-router.use(express.json());
+router.use(express.json()); 
 router.use(express.urlencoded({ extended: true }));
 <<<<<<< HEAD
 const UserRepository  = require('../Repo/UserRepository'); // Replace with the actual path
