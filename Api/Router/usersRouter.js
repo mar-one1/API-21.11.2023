@@ -5,9 +5,41 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const fs = require('fs');
-//const upload = multer({ dest: 'uploads/'});
-router.use(express.json());
+router.use(express.json()); 
 router.use(express.urlencoded({ extended: true }));
+<<<<<<< HEAD
+const UserRepository  = require('../Repo/UserRepository'); // Replace with the actual path
+
+// Get a user by ID
+/*router.get('/:id', async (req, res) => {
+=======
+const { UserRepository } = require('../Repo/UserRepository'); // Replace with the actual path
+
+// Get a user by ID
+router.get('/:id', async (req, res) => {
+>>>>>>> 9a25b9e3b674e298d7f6465672cefc03ef499fdb
+  const userId = req.params.id;
+
+  try {
+    await UserRepository.getUserById(userId, (err, user) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.json(user);
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+<<<<<<< HEAD
+});*/
+=======
+});
+>>>>>>> 9a25b9e3b674e298d7f6465672cefc03ef499fdb
+
+
 //router.use(bodyParser.json());
 const storage = multer.diskStorage({
   destination: './public/uploads/', // Destination directory
@@ -15,7 +47,7 @@ const storage = multer.diskStorage({
       // Define a custom file name (you can modify this logic)
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       cb(null, uniqueSuffix + '-' + file.originalname);
-  }
+  } 
 //const upload = multer({ storage: storage });
 });
 const upload = multer({ dest: 'uploads/', storage: storage})

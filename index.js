@@ -7,6 +7,7 @@ const port = process.env.PORT || 3000;
 const multer = require('multer');
 const path = require('path');
 app.use(express.static('public'));
+const mongoose = require('mongoose');
 
 const authRouter = require('./Api/Router/auth_Router');
 // Import the verifyToken middleware
@@ -55,6 +56,9 @@ db.serialize(() => {
     }
   });
 });
+
+// Connect to your MongoDB database
+mongoose.connect('mongodb://127.0.0.1:27017/db_note', { useNewUrlParser: true, useUnifiedTopology: true });
 
   // Example: Protect a route using the verifyToken middleware
   app.get('/protected', verifyToken, (req, res) => {
