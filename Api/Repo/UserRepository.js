@@ -1,6 +1,5 @@
 const { MongoClient, ObjectId } = require('mongodb');
 const uri = 'mongodb://127.0.0.1:27017/';
-<<<<<<< HEAD
 const client = new MongoClient(uri, { useNewUrlParser: true });
 const mongoose = require('mongoose');
 // Assuming User is defined in User.js
@@ -57,8 +56,7 @@ class UserRepository {
 
 
 module.exports = UserRepository;
-=======
-const client = new MongoClient(uri, { useUnifiedTopology: true });
+/*const client = new MongoClient(uri, { useUnifiedTopology: true });
 class UserRepository {
   static async getUserById(id, callback) {
   
@@ -176,5 +174,4 @@ UserRepository.getUserById(userId, (err, user) => {
   } else {
     console.log('User found:', user);
   }
-});
->>>>>>> 9a25b9e3b674e298d7f6465672cefc03ef499fdb
+});*/
