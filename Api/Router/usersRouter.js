@@ -7,10 +7,10 @@ const multer = require('multer');
 const fs = require('fs');
 router.use(express.json()); 
 router.use(express.urlencoded({ extended: true }));
-const { UserRepository } = require('../Repo/UserRepository'); // Replace with the actual path
+const UserRepository  = require('../Repo/UserRepository'); // Replace with the actual path
 
 // Get a user by ID
-router.get('/:id', async (req, res) => {
+/*router.get('/:id', async (req, res) => {
   const userId = req.params.id;
 
   try {
@@ -26,7 +26,7 @@ router.get('/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
+});*/
 
 
 //router.use(bodyParser.json());
