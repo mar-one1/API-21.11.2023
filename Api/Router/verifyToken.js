@@ -18,23 +18,25 @@ function verifyToken(req, res, next) {
         //const refreshToken = req.body.refreshToken;
         // Extract the refresh token from the "Authorization" header
         const refreshToken = token.replace('Bearer ', '');
+        console.log(refreshToken);
         if (!refreshToken) {
           return res.status(401).json({ message: 'Access token expired, no refresh token provided' });
         }
 
         jwt.verify(refreshToken, secretKey, (err, user) => {
           if (err) {
-            return res.status(401).json({ message: 'Refresh token is invalid' });
+           return res.status(401).json({ message: 'Refresh token is invalid' });
           }
 
           // If the refresh token is valid, generate a new access token
           //const newAccessToken = generateAccessToken({ id: user.id, username: user.username });
-          const newAccessToken = jwt.sign({ id: user.Id_user,username: user.username,firstname: user.Firstname_user,icon:user.Icon_user,birthday:user.Birthday_user,lastname:user.Lastname_user,email:user.Email_user,phoneNumber:user.Phonenumber_user,grade:user.Grade_user,status:user.Status_user,password:user.password }, secretKey, {
+          //const newAccessToken = jwt.sign({ id: user.Id_user,username: user.username,firstname: user.Firstname_user,icon:user.Icon_user,birthday:user.Birthday_user,lastname:user.Lastname_user,email:user.Email_user,phoneNumber:user.Phonenumber_user,grade:user.Grade_user,status:user.Status_user,password:user.password }, secretKey, {
+            const newAccessToken = jwt.sign({ id: user.Id_user,username: user.username  }, secretKey, {
             expiresIn: '1h', // Token expiration time (adjust as needed)
           });
           // Attach the new access token to the request
           req.newAccessToken = newAccessToken;
-
+          console.log(newAccessToken);
           // Continue processing the request with the new access token
           next();
         });
