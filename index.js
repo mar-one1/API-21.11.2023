@@ -62,7 +62,16 @@ db.serialize(() => {
 
   // Example: Protect a route using the verifyToken middleware
   app.get('/protected', verifyToken, (req, res) => {
-    res.json({ message: 'This route is protected', user: req.user, token: req.newAccessToken});
+    // Check if token was refreshed
+  if (req.tokenRefreshed) {
+    // If token was refreshed, respond with the new token
+    res.status(201).json({ message: 'This route is protected token was refreshed', user: req.user, token: req.newAccessToken});
+  } else {
+    // If token was valid, proceed with the endpoint logic
+    // Your endpoint logic here...
+    res.status(200).json({ message: 'This route is protected', user: req.user, token: req.newAccessToken});
+  }
+    
   });
 
 
