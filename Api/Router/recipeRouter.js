@@ -107,9 +107,10 @@ router.get('/:id/user', (req, res) => {
 });
 
 // get recipes by id User
-router.get('/user/:id', (req, res) => {
-  const userId = req.params.id;
-  Recipe.getRecipesByUserId(userId, (err, recipes) => {
+router.get('/user/:username', (req, res) => {
+  const userId = req.params.username;
+  console.log(userId);
+  Recipe.getRecipesByUsernameUser(userId, (err, recipes) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
