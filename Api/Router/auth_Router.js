@@ -58,7 +58,7 @@ authRouter.use(bodyParser.json());
       // Generate a JWT token
       //const token = jwt.sign({ id: user.Id_user,username: user.username,firstname: user.Firstname_user,icon:user.icon,birthday:user.Birthday_user,lastname:user.Lastname_user,email:user.Email_user,phoneNumber:user.Phonenumber_user,grade:user.Grade_user,status:user.Status_user,password:user.password }, secretKey, {
       const token = jwt.sign({ id: user.Id_user,username: user.username }, secretKey, {
-        expiresIn: '1h', // Token expiration time (adjust as needed)
+        expiresIn: '0.5h', // Token expiration time (adjust as needed)
       });
       
       res.status(200).json({ message: 'Authentication successful', token });
@@ -66,7 +66,7 @@ authRouter.use(bodyParser.json());
     db.close();
     });
     });
-
+ 
 
 
   
