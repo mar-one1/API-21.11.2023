@@ -115,23 +115,23 @@ const db = new sqlite3.Database('DB_Notebook.db');
         ingredientSet.add(JSON.stringify({
           id: row.Id_Ingredient_recipe,
           ingredient: row.Ingredient_recipe,
-          poid: row.PoidIngredient_recipe,
-          frk: row.FRK_recipe
+          poidIngredient: row.PoidIngredient_recipe,
+          recipeId: row.FRK_recipe
         }));
     
         reviewSet.add(JSON.stringify({
           id: row.Id_Review_recipe,
-          detail: row.Detail_Review_recipe,
-          rate: row.Rate_Review_recipe,
-          frk: row.FRK_recipe
+          detailReview: row.Detail_Review_recipe,
+          rateReview: row.Rate_Review_recipe,
+          recipeId: row.FRK_recipe
         }));
     
         stepSet.add(JSON.stringify({
           id: row.Id_Step_recipe,
-          detail: row.Detail_Step_recipe,
-          image: row.Image_Step_recipe,
-          time: row.Time_Step_recipe,
-          frk: row.FRK_recipe
+          detailStep: row.Detail_Step_recipe,
+          imageStep: row.Image_Step_recipe,
+          timeStep: row.Time_Step_recipe,
+          recipeId: row.FRK_recipe
         }));
       });
     
@@ -269,12 +269,12 @@ const db = new sqlite3.Database('DB_Notebook.db');
   console.log(username);
     UserModel.getUserByUsername(username, (err, user) => {
       if (err) {
-        console.log('err');
-        return res.status(500).json({ error: err.message });
+        callback(err, null);
+          return;
       }
       if (!user) {
-        console.log('User not found');
-        return res.status(404).json({ error: 'User not found' });
+        callback(null, null); // user not found
+          return;
       } 
       //res.json(user);
     const id = user.id;
