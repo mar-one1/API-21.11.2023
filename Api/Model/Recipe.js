@@ -115,23 +115,23 @@ const db = new sqlite3.Database('DB_Notebook.db');
         ingredientSet.add(JSON.stringify({
           id: row.Id_Ingredient_recipe,
           ingredient: row.Ingredient_recipe,
-          poid: row.PoidIngredient_recipe,
-          frk: row.FRK_recipe
+          poidIngredient: row.PoidIngredient_recipe,
+          recipeId: row.FRK_recipe
         }));
     
         reviewSet.add(JSON.stringify({
           id: row.Id_Review_recipe,
-          detail: row.Detail_Review_recipe,
-          rate: row.Rate_Review_recipe,
-          frk: row.FRK_recipe
+          detailReview: row.Detail_Review_recipe,
+          rateReview: row.Rate_Review_recipe,
+          recipeId: row.FRK_recipe
         }));
     
         stepSet.add(JSON.stringify({
           id: row.Id_Step_recipe,
-          detail: row.Detail_Step_recipe,
-          image: row.Image_Step_recipe,
-          time: row.Time_Step_recipe,
-          frk: row.FRK_recipe
+          detailStep: row.Detail_Step_recipe,
+          imageStep: row.Image_Step_recipe,
+          timeStep: row.Time_Step_recipe,
+          recipeId: row.FRK_recipe
         }));
       });
     
@@ -261,6 +261,46 @@ const db = new sqlite3.Database('DB_Notebook.db');
       }
     );
     db.close();
+  }
+
+  static getRecipesByUsernameUser(username, callback) {
+
+  const db = new sqlite3.Database('DB_Notebook.db');
+  console.log(username);
+    UserModel.getUserByUsername(username, (err, user) => {
+      if (err) {
+        callback(err, null);
+          return;
+      }
+      if (!user) {
+        callback(null, null); // user not found
+          return;
+      } 
+      //res.json(user);
+    const id = user.id;
+    console.log(id);
+    db.all(
+      'SELECT * FROM Recipe WHERE Frk_user = ?',
+      [id],
+      (err, rows) => {
+        if (err) {
+          callback(err, null);
+          return;
+        }
+        const recipes = rows.map((row) => {
+          return new Recipe(
+            row.Id_recipe,
+            row.Nom_Recipe,
+            row.Icon_recipe,
+            row.Fav_recipe,
+            row.Frk_user
+          );
+        });
+        callback(null, recipes);
+      }
+    );
+    db.close();
+  });
   }
 
 

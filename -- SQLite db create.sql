@@ -65,8 +65,18 @@ CREATE TABLE StepRecipe (
     FOREIGN KEY (FRK_recipe) REFERENCES Recipe(Id_recipe) ON DELETE CASCADE
 );
 
+-- Create the Produit table
 CREATE TABLE Produit (
     Id_Produit INTEGER PRIMARY KEY AUTOINCREMENT,
     Produit TEXT,
     PoidProduit TEXT
+);
+
+-- Create the FavoriteUserRecipe table
+CREATE TABLE FavoriteUserRecipe (
+    favRecipe_id INTEGER PRIMARY KEY,
+    FRK_user INTEGER,
+    FRK_recipe INTEGER,
+    FOREIGN KEY (FRK_user) REFERENCES User(Id_user),
+    FOREIGN KEY (FRK_recipe) REFERENCES Recipe(Id_recipe)
 );
