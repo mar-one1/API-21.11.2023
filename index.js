@@ -20,6 +20,8 @@ const ingredientRecipeRouter = require('./Api/Router/ingredient_recipeRouter');
 const stepRecipeRouter = require('./Api/Router/step_recipeRouter');
 const reviewRecipeRouter = require('./Api/Router/review_recipeRouter');
 const produitRouter = require('./Api/Router/produit_Router');
+const favRouter = require('./Api/Router/fav_user_recipe_Router');
+
 
 
 // ...
@@ -41,6 +43,7 @@ app.use('/ingredientrecipes', ingredientRecipeRouter);
 app.use('/steprecipes', stepRecipeRouter);
 app.use('/reviewrecipes', reviewRecipeRouter);
 app.use('/produits',produitRouter);
+app.use('/favorites',favRouter);
 
 
 db.serialize(() => {
