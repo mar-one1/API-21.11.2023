@@ -330,6 +330,27 @@ static searchRecipes(Nom_Recipe, callback) {
     db.close();
   }
 
+  
+  static deleteRecipe(recipeId, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    db.run(
+      'DELETE FROM Recipe WHERE Id_recipe = ?',
+      [recipeId],
+      function (err) {
+        if (err) {
+          callback(err);
+          return;
+        }
+        if (this.changes === 0) {
+          callback(null, false); // Recipe not found or not deleted
+          return;
+        }
+        callback(null, true); // Recipe deleted successfully
+      }
+    );
+    db.close();
+  }
+
   // Add a method to get the User associated with this Recipe
   getUser(callback) {
     UserModel.getUserById(this.userId, callback);

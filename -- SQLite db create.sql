@@ -1,6 +1,6 @@
 -- SQLite
 -- Create the User table
-CREATE TABLE User (
+/*CREATE TABLE User (
     Id_user INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT,
     Firstname_user TEXT,
@@ -71,7 +71,7 @@ CREATE TABLE Produit (
     Produit TEXT,
     PoidProduit TEXT
 );
-
+*/
 -- Create the FavoriteUserRecipe table
 CREATE TABLE FavoriteUserRecipe (
     favRecipe_id INTEGER PRIMARY KEY,
