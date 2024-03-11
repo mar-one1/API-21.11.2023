@@ -50,22 +50,23 @@ class User
       callback
     ) {
       const db = new sqlite3.Database('DB_Notebook.db');
-      const name = username.toUpperCase();
-      console.log(name);
+    
       // Check if the user already exists
       db.get(
         'SELECT * FROM User WHERE username = ?',
         [username],
         function (err, row) {
           if (err) {
+            db.close();
             callback(err);
             return;
           }
     
           if (row) {
+            db.close();
             console.log("User already exists");
             // User already exists, handle accordingly (e.g., return an error)
-            callback(new Error('User already exists')); 
+           callback(new Error('User already exists'));
             return;
           }
     
@@ -75,6 +76,7 @@ class User
             [username, firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status],
             function (err) {
               if (err) {
+                db.close();
                 callback(err);
                 return;
               }
@@ -93,14 +95,15 @@ class User
                 grade,
                 status
               );
+              db.close();
               callback(null, newUser);
             }
           );
         }
       );
-    
-      db.close();
     }
+    
+    
 
     static getUserById(id, callback) {
       const db = new sqlite3.Database('DB_Notebook.db');

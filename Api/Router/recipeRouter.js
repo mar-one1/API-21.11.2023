@@ -5,6 +5,9 @@ const Fuse = require('fuse.js');
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 const multer = require('multer');
+const { body, validationResult } = require('express-validator');
+const validateRecipe = require('../validators/validateRecipe');
+
 
 const storage = multer.diskStorage({
   destination: './public/data/uploads', // Destination directory
@@ -18,13 +21,17 @@ const storage = multer.diskStorage({
 const upload = multer({ dest: 'uploads/', storage: storage})
 
 // Create a recipe
-router.post('/', async (req, res) => {
+router.post('/',validateRecipe.validateCreateRecipe, async (req, res) => {
   const {
      name,
       icon,
        fav,
         userId
        } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
        console.log(name);
        console.log(icon);
        console.log(fav);
@@ -134,6 +141,24 @@ router.get('/search/nom', (req, res) =>  {
       return res.status(404).json({ error: 'Recipes not found !!!' });
     }
     res.json(recipes);
+  });
+});
+
+// DELETE route to delete a recipe by ID
+router.delete('/:id', validateRecipe.validateDeleteRecipe,(req, res) => {
+  const recipeId = req.params.id;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  Recipe.deleteRecipe(recipeId, (err, deleted) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!deleted) {
+      return res.status(404).json({ error: 'Recipe not found or not deleted' });
+    }
+    res.json({ message: 'Recipe deleted successfully' });
   });
 });
 // Add more routes for updating, deleting, or other operations as needed

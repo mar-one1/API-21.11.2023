@@ -8,6 +8,9 @@ const fs = require('fs');
 router.use(express.json()); 
 router.use(express.urlencoded({ extended: true }));
 const UserRepository  = require('../Repo/UserRepository'); // Replace with the actual path
+const { body, validationResult } = require('express-validator');
+const validateUser = require('../validators/validateUser');
+
 
 // Get a user by ID
 /*router.get('/:id', async (req, res) => {
@@ -42,7 +45,10 @@ const storage = multer.diskStorage({
 const upload = multer({ dest: 'uploads/', storage: storage})
 
 // Create a new user
-router.post('/', async (req, res) => {
+// Create a new user
+router.post('/', validateUser.validateUserRegistration, async (req, res) => {
+
+  // Extract user data from the request body
   const {
     username,
     firstname,
@@ -55,26 +61,37 @@ router.post('/', async (req, res) => {
     grade,
     status,
   } = req.body;
+
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  // Create the user in the database
   User.createUser(
-    username,
-    firstname,
-    lastname,
-    birthday,
-    email,
-    phoneNumber,
-    icon,
-    password,
-    grade,
-    status,
-    (err, newUser) => {
-      
-      if (err) {
-        return res.status(409).json({ error: err.message });
+  username,
+  firstname,
+  lastname,
+  birthday,
+  email,
+  phoneNumber,
+  icon,
+  password,
+  grade,
+  status,
+  (err, newUser) => {
+    
+    if (err) {
+      if (err.message === 'User already exists') {
+        return res.status(409).json({ error: 'User already exists' });
       }
-      
-    // If the user doesn't exist, add them to the database
-      res.status(201).json(newUser);
+      else {
+      return res.status(500).json({ error: err.message });
+      }
     }
+    res.status(201).json(newUser);
+  }
   );
 });
 
@@ -186,7 +203,7 @@ router.put('/image/:username', (req, res) => {
 })
 
 // Update a user by ID
-router.put('/:id', (req, res) => {
+router.put('/:id', validateUser.validateUserUpdate, (req, res) => {
   const userId = req.params.id;
   const {
     username,
@@ -200,6 +217,11 @@ router.put('/:id', (req, res) => {
     grade,
     status,
   } = req.body;
+   // Check for validation errors
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+     return res.status(400).json({ errors: errors.array() });
+   }
   User.updateUser(userId,username,firstname,lastname,birthday,email,phoneNumber,icon,password,grade,status, (err, updatedUser) => {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -212,7 +234,7 @@ router.put('/:id', (req, res) => {
 });
 
 // Update a user by USERNAME
-router.put('/filtre/:username', async (req, res) => {
+router.put('/filtre/:username',  validateUser.validateUserUpdate ,async (req, res) => {
   const username = req.params.username;
   console.log(username);
   const {
@@ -226,6 +248,11 @@ router.put('/filtre/:username', async (req, res) => {
     grade,
     status,
   } = req.body;
+   // Check for validation errors
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+     return res.status(400).json({ errors: errors.array() });
+   }
   User.updateUserByUsername(username,firstname,lastname,birthday,email,phoneNumber,icon,password,grade,status, (err, updatedUser) => {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -239,11 +266,14 @@ router.put('/filtre/:username', async (req, res) => {
 
 
 
-
-
 // Delete a user by ID
-router.delete('/:id', (req, res) => {
+router.delete('/:id', validateUser.validateUserDelete, (req, res) => {
   const userId = req.params.id;
+   // Check for validation errors
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+     return res.status(400).json({ errors: errors.array() });
+   }
   User.deleteUser(userId, (err, deleted) => {
     if (err) {
       return res.status(500).json({ error: err.message });
