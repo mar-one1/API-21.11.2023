@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const Recipe = require('../Model/Recipe'); // Import the Recipe model
-const db = new sqlite3.Database('DB_Notebook.db');
+
 
 class IngredientRecipe {
   constructor(id, ingredient, poidIngredient, recipeId) {
@@ -11,6 +11,7 @@ class IngredientRecipe {
   }
 
   static createIngredientRecipe(ingredient, poidIngredient, recipeId, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
     db.run(
       'INSERT INTO Ingredient_recipe (Ingredient_recipe, PoidIngredient_recipe, FRK_recipe) VALUES (?, ?, ?)',
       [ingredient, poidIngredient, recipeId],
@@ -32,6 +33,7 @@ class IngredientRecipe {
   }
 
   static getAllIngredientRecipes(callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
     db.all('SELECT * FROM Ingredient_recipe', (err, rows) => {
       if (err) {
         callback(err, null);
@@ -51,6 +53,7 @@ class IngredientRecipe {
   }
 
   static getIngredientRecipeById(ingredientId, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
     db.get(
       'SELECT * FROM Ingredient_recipe WHERE Id_Ingredient_recipe = ?',
       [ingredientId],
@@ -78,6 +81,7 @@ class IngredientRecipe {
 
   
   static getIngredientsByRecipeId(recipeId, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
     db.all(
       'SELECT * FROM Ingredient_recipe WHERE FRK_recipe = ?',
       [recipeId],
@@ -101,6 +105,7 @@ class IngredientRecipe {
   }
 
   static updateIngredientRecipe(ingredientId, ingredient, poidIngredient, recipeId, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
     db.run(
       'UPDATE Ingredient_recipe SET Ingredient_recipe = ?, PoidIngredient_recipe = ?, FRK_recipe = ? WHERE Id_Ingredient_recipe = ?',
       [ingredient, poidIngredient, recipeId, ingredientId],
@@ -126,6 +131,7 @@ class IngredientRecipe {
   }
 
   static deleteIngredientRecipe(ingredientId, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
     db.run(
       'DELETE FROM Ingredient_recipe WHERE Id_Ingredient_recipe = ?',
       [ingredientId],
