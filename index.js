@@ -8,6 +8,9 @@ const multer = require('multer');
 const path = require('path');
 app.use(express.static('public'));
 const mongoose = require('mongoose');
+const swaggerSetup = require('./Api/swagger');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./Api/swagger');
 
 const authRouter = require('./Api/Router/auth_Router');
 // Import the verifyToken middleware
@@ -24,6 +27,7 @@ const favRouter = require('./Api/Router/fav_user_recipe_Router');
 
 
 
+
 // ...
 // Middleware for parsing JSON request bodies
 app.use(
@@ -31,6 +35,9 @@ app.use(
     extended: true,
   })
 );
+
+// Initialize Swagger documentation
+swaggerSetup(app);
 
 
 app.use('/users', usersRouter);
@@ -44,6 +51,10 @@ app.use('/steprecipes', stepRecipeRouter);
 app.use('/reviewrecipes', reviewRecipeRouter);
 app.use('/produits',produitRouter);
 app.use('/favorites',favRouter);
+// Serve Swagger UI
+
+
+
 
 
 db.serialize(() => {

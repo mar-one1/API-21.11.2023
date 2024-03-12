@@ -70,6 +70,23 @@ router.put('/:id', (req, res) => {
 
 // Route to get favorites by user ID
 router.get('/:id', (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+
+    // Call the method to get favorites by user ID from the Favorite model
+    Favorite.getFavoriteById(id, (err, favorites) => {
+        if (err) {
+            return res.status(500).json({ error: 'Failed to fetch favorites' });
+        }
+        if (!favorites) {
+            return res.status(404).json({ error: 'Favorite not found ' });
+        }
+        res.json(favorites);
+    });
+});
+
+// Route to get favorites by user ID
+router.get('/user/:id', (req, res) => {
     const FRK_user = req.params.id;
     console.log(FRK_user);
 

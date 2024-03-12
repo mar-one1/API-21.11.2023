@@ -5,7 +5,12 @@ const fs = require('fs');
     const path = require('path');
 const { isNull } = require('util');
 
-
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management endpoints
+ */
 class User
 {
     constructor(
@@ -35,7 +40,30 @@ class User
     }
     
   
-    
+     /**
+   * @swagger
+   * /users:
+   *   post:
+   *     summary: Create a new user
+   *     tags: [Users]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/User'
+   *     responses:
+   *       '201':
+   *         description: Successfully created a new user
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/User'
+   *       '400':
+   *         description: Bad request, invalid user data
+   *       '500':
+   *         description: Internal server error
+   */
     static createUser(
       username,
       firstname,
@@ -104,7 +132,30 @@ class User
     }
     
     
-
+  /**
+   * @swagger
+   * /users/{userId}:
+   *   get:
+   *     summary: Get a user by ID
+   *     tags: [Users]
+   *     parameters:
+   *       - in: path
+   *         name: userId
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       '200':
+   *         description: Successfully retrieved user
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/User'
+   *       '404':
+   *         description: User not found
+   *       '500':
+   *         description: Internal server error
+   */
     static getUserById(id, callback) {
       const db = new sqlite3.Database('DB_Notebook.db');
       db.get(
