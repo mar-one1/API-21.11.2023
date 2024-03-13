@@ -72,6 +72,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
       LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
       LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
       LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
+      LEFT JOIN FavoriteUserRecipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
       WHERE Recipe.Id_recipe = ?
     `;
   
