@@ -76,8 +76,12 @@ router.post('/upload/:id', upload.single('image'),async  (req, res) => {
 });
 
 // Get a recipe by ID
-router.get('/:id', (req, res) => {
+router.get('/:id',validateRecipe.validateGetByIdRecipe, (req, res) => {
   const recipeId = req.params.id;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   Recipe.getFullRecipeById(recipeId, (err, recipe) => {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -100,8 +104,12 @@ router.get('/', (req, res) => {
 });
 
 // get User by id recipe
-router.get('/:id/user', (req, res) => {
+router.get('/:id/user', validateRecipe.validateGetByIdRecipe, (req, res) => {
   const recipeId = req.params.id;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   Recipe.getUserByRecipeId(recipeId, (err, user) => {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -114,9 +122,13 @@ router.get('/:id/user', (req, res) => {
 });
 
 // get recipes by id User
-router.get('/user/:username', (req, res) => {
+router.get('/user/:username', validateRecipe.validateGetByUsernameRecipe, (req, res) => {
   const userId = req.params.username;
   console.log(userId);
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   Recipe.getRecipesByUsernameUser(userId, (err, recipes) => {
     if (err) {
       return res.status(500).json({ error: err.message });
