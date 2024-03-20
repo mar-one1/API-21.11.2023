@@ -22,7 +22,7 @@ const validateUser = require('../validators/validateUser');
         return res.status(500).json({ error: err.message });
       }
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(406).json({ error: 'User not found' });
       }
       res.json(user);
     });
@@ -136,7 +136,7 @@ router.get('/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(406).json({ error: 'User not found' });
     }
     res.json(user);
   });
@@ -151,7 +151,7 @@ console.log(username)
       return res.status(500).json({ error: err.message });
     }
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(406).json({ error: 'User not found' });
     } 
     res.json(user);
   });
@@ -166,7 +166,7 @@ console.log("username for image is : " +username)
       return res.status(500).json({ error: err.message });
     }
     if (!imageByte) {
-      return res.status(404).json({ error: 'image not found' });
+      return res.status(406).json({ error: 'image not found' });
     } 
     console.log(imageByte);
     res.json(imageByte);
@@ -196,7 +196,7 @@ router.put('/image/:username', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!path) {
-      return res.status(404).json({ error: 'User not found or not updated!!' });
+      return res.status(406).json({ error: 'User not found or not updated!!' });
     }
     res.json(path);
   });
@@ -227,7 +227,7 @@ router.put('/:id', validateUser.validateUserUpdate, (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found or not updated' });
+      return res.status(406).json({ error: 'User not found or not updated' });
     }
     res.json(updatedUser);
   });
@@ -258,7 +258,7 @@ router.put('/filtre/:username',  validateUser.validateUserUpdate ,async (req, re
       return res.status(500).json({ error: err.message });
     }
     if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found or not updated' });
+      return res.status(406).json({ error: 'User not found or not updated' });
     }
     res.json(updatedUser);
   });
@@ -279,7 +279,7 @@ router.delete('/:id', validateUser.validateUserDelete, (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!deleted) {
-      return res.status(404).json({ error: 'User not found or not deleted' });
+      return res.status(406).json({ error: 'User not found or not deleted' });
     }
     res.json({ message: 'User deleted successfully' });
   });

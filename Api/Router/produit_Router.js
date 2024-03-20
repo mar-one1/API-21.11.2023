@@ -24,7 +24,7 @@ router.get('/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!produit) {
-      return res.status(404).json({ error: 'Produit not found' });
+      return res.status(406).json({ error: 'Produit not found' });
     }
     res.json(produit);
   });
@@ -49,7 +49,7 @@ router.put('/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!updatedProduit) {
-      return res.status(404).json({ error: 'Produit not found or not updated' });
+      return res.status(406).json({ error: 'Produit not found or not updated' });
     }
     res.json(updatedProduit);
   });
@@ -63,7 +63,7 @@ router.delete('/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!deleted) {
-      return res.status(404).json({ error: 'Produit not found or not deleted' });
+      return res.status(406).json({ error: 'Produit not found or not deleted' });
     }
     res.json({ message: 'Produit deleted successfully' });
   });

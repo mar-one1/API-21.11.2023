@@ -151,7 +151,7 @@ class User
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/User'
-   *       '404':
+   *       '406':
    *         description: User not found
    *       '500':
    *         description: Internal server error

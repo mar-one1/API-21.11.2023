@@ -87,7 +87,7 @@ router.get('/:id',validateRecipe.validateGetByIdRecipe, (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!recipe) {
-      return res.status(404).json({ error: 'Recipe not found' });
+      return res.status(406).json({ error: 'Recipe not found' });
     }
     res.json(recipe);
   });
@@ -115,7 +115,7 @@ router.get('/:id/user', validateRecipe.validateGetByIdRecipe, (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(406).json({ error: 'User not found' });
     }
     res.json(user);
   });
@@ -134,7 +134,7 @@ router.get('/user/:username', validateRecipe.validateGetByUsernameRecipe, (req, 
       return res.status(500).json({ error: err.message });
     }
     if (!recipes || recipes.length === 0) {
-      return res.status(404).json({ error: 'Recipes not found for this user' });
+      return res.status(406).json({ error: 'Recipes not found for this user' });
     }
     res.json(recipes);
   });
@@ -150,7 +150,7 @@ router.get('/search/nom', (req, res) =>  {
       return res.status(500).json({ error: err.message });
     }
     if (!recipes || recipes.length === 0) {
-      return res.status(404).json({ error: 'Recipes not found !!!' });
+      return res.status(406).json({ error: 'Recipes not found !!!' });
     }
     res.json(recipes);
   });
@@ -168,7 +168,7 @@ router.delete('/:id', validateRecipe.validateDeleteRecipe,(req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!deleted) {
-      return res.status(404).json({ error: 'Recipe not found or not deleted' });
+      return res.status(406).json({ error: 'Recipe not found or not deleted' });
     }
     res.json({ message: 'Recipe deleted successfully' });
   });

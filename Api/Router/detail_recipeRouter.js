@@ -21,7 +21,7 @@ router.get('/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!detailRecipe) {
-      return res.status(404).json({ error: 'Detail Recipe not found' });
+      return res.status(406).json({ error: 'Detail Recipe not found' });
     }
     res.json(detailRecipe);
   });
@@ -45,7 +45,7 @@ router.get('/:id/recipe', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!recipe) {
-      return res.status(404).json({ error: 'Recipe not found' });
+      return res.status(406).json({ error: 'Recipe not found' });
     }
     res.json(recipe);
   });
@@ -59,7 +59,7 @@ router.get('/:id/detailrecipe', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!detailRecipe) {
-      return res.status(404).json({ error: 'Detail Recipe not found' });
+      return res.status(406).json({ error: 'Detail Recipe not found' });
     }
     res.json(detailRecipe);
   });

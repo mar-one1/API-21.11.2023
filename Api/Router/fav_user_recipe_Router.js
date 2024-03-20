@@ -40,7 +40,7 @@ router.delete('/:id', (req, res) => {
             return res.status(500).json({ error: 'Failed to delete favorite' });
         }
         if (!deleted) {
-            return res.status(404).json({ error: 'Favorite not found or not deleted' });
+            return res.status(406).json({ error: 'Favorite not found or not deleted' });
         }
         res.json({ message: 'Favorite deleted successfully' });
     });
@@ -61,7 +61,7 @@ router.put('/:id', (req, res) => {
                 return res.status(500).json({ error: 'Failed to update favorite' });
             }
             if (!updatedFavorite) {
-                return res.status(404).json({ error: 'Favorite not found or not updated' });
+                return res.status(406).json({ error: 'Favorite not found or not updated' });
             }
             res.json(updatedFavorite);
         }
@@ -79,7 +79,7 @@ router.get('/:id', (req, res) => {
             return res.status(500).json({ error: 'Failed to fetch favorites' });
         }
         if (!favorites) {
-            return res.status(404).json({ error: 'Favorite not found ' });
+            return res.status(406).json({ error: 'Favorite not found ' });
         }
         res.json(favorites);
     });
@@ -96,7 +96,7 @@ router.get('/user/:id', (req, res) => {
             return res.status(500).json({ error: 'Failed to fetch favorites' });
         }
         if (!favorites) {
-            return res.status(404).json({ error: 'Favorite not found ' });
+            return res.status(406).json({ error: 'Favorite not found ' });
         }
         res.json(favorites);
     });

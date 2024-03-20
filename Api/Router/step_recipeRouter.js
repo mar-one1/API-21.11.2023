@@ -35,7 +35,7 @@ router.get('/recipe/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!steps || steps.length === 0) {
-      return res.status(404).json({ error: 'Steps not found for this recipe' });
+      return res.status(406).json({ error: 'Steps not found for this recipe' });
     }
     res.json(steps);
   });
@@ -55,7 +55,7 @@ router.put('/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!updatedStepRecipe) {
-      return res.status(404).json({ error: 'Step recipe not found or not updated' });
+      return res.status(406).json({ error: 'Step recipe not found or not updated' });
     }
     res.json(updatedStepRecipe);
   });
@@ -70,7 +70,7 @@ router.delete('/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!deleted) {
-      return res.status(404).json({ error: 'Step recipe not found or not deleted' });
+      return res.status(406).json({ error: 'Step recipe not found or not deleted' });
     }
     res.json({ message: 'Step recipe deleted successfully' });
   });

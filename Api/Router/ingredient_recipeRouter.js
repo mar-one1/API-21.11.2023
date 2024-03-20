@@ -24,7 +24,7 @@ router.get('/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!ingredientRecipe) {
-      return res.status(404).json({ error: 'Ingredient recipe not found' });
+      return res.status(406).json({ error: 'Ingredient recipe not found' });
     }
     res.json(ingredientRecipe);
   });
@@ -48,7 +48,7 @@ router.get('/recipe/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!ingredients || ingredients.length === 0) {
-      return res.status(404).json({ error: 'Ingredients not found for this recipe' });
+      return res.status(406).json({ error: 'Ingredients not found for this recipe' });
     }
     res.json(ingredients);
   });
@@ -68,7 +68,7 @@ router.put('/:id', (req, res) => {
         return res.status(500).json({ error: err.message });
       }
       if (!updatedIngredientRecipe) {
-        return res.status(404).json({ error: 'Ingredient recipe not found or not updated' });
+        return res.status(406).json({ error: 'Ingredient recipe not found or not updated' });
       }
       res.json(updatedIngredientRecipe);
     });
@@ -83,7 +83,7 @@ router.put('/:id', (req, res) => {
         return res.status(500).json({ error: err.message });
       }
       if (!deleted) {
-        return res.status(404).json({ error: 'Ingredient recipe not found or not deleted' });
+        return res.status(406).json({ error: 'Ingredient recipe not found or not deleted' });
       }
       res.json({ message: 'Ingredient recipe deleted successfully' });
     });

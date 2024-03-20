@@ -14,7 +14,7 @@ const swaggerSpec = require('./Api/swagger');
 
 const authRouter = require('./Api/Router/auth_Router');
 // Import the verifyToken middleware
-const verifyToken = require('./Api/Router/verifyToken'); // Adjust the path as needed
+const verifyToken = require('./Api/Middleware/verifyToken'); // Adjust the path as needed
 const bodyParser = require('body-parser');
 const usersRouter = require('./Api/Router/usersRouter');
 const recipeRouter = require('./Api/Router/recipeRouter');
