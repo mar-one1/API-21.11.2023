@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 // Assuming User is defined in User.js
 //const User = require('../Model/User');
 const User = require('../Schema/user_Schema');  // Adjust the path based on your file structure
-const { param } = require('../Router/usersRouter');
 class UserRepository {
   // Create a new user
   static async createUser(userData) {

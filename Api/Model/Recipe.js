@@ -63,6 +63,102 @@ const db = new sqlite3.Database('DB_Notebook.db');
     db.close();
   }*/
 
+  static getAllFullRecipesByUsername(username, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    UserModel.getUserByUsername(username, (err, user) => {
+      if (err) {
+        callback(err, null);
+          return;
+      }
+      if (!user) {
+        callback(null, null); // user not found
+          return;
+      } 
+      //res.json(user);
+    const id = user.id;
+    console.log(id);
+    const sql = `
+        SELECT Recipe.*, 
+            Detail_recipe.*, 
+            Ingredient_recipe.*, 
+            Step_recipe.*, 
+            Review_recipe.*
+        FROM Recipe
+        LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
+        LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
+        LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
+        LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
+        WHERE Recipe.Frk_user = ?
+    `;
+
+    db.all(sql, [id], (err, rows) => {
+        if (err) {
+            db.close();
+            callback(err, null);
+            return;
+        }
+
+        const recipeSet = new Set();
+        const detailrecipeSet = new Set();
+        const ingredientSet = new Set();
+        const reviewSet = new Set();
+        const stepSet = new Set();
+
+        rows.forEach(row => {
+            recipeSet.add(JSON.stringify({
+                id: row.Id_recipe,
+                name: row.Nom_Recipe,
+                icon: row.Icon_recipe,
+                fav: row.Fav_recipe,
+                userId: row.Frk_user
+            }));
+
+            detailrecipeSet.add(JSON.stringify({
+                id: row.Id_detail_recipe,
+                detail: row.Dt_recipe,
+                time: row.Dt_recipe_time,
+                rate: row.Rate_recipe,
+                level: row.Level_recipe,
+                calories: row.Calories_recipe,
+                recipeId: row.FRK_recipe
+            }));
+
+            ingredientSet.add(JSON.stringify({
+                id: row.Id_Ingredient_recipe,
+                ingredient: row.Ingredient_recipe,
+                poidIngredient: row.PoidIngredient_recipe,
+                recipeId: row.FRK_recipe
+            }));
+
+            reviewSet.add(JSON.stringify({
+                id: row.Id_Review_recipe,
+                detailReview: row.Detail_Review_recipe,
+                rateReview: row.Rate_Review_recipe,
+                recipeId: row.FRK_recipe
+            }));
+
+            stepSet.add(JSON.stringify({
+                id: row.Id_Step_recipe,
+                detailStep: row.Detail_Step_recipe,
+                imageStep: row.Image_Step_recipe,
+                timeStep: row.Time_Step_recipe,
+                recipeId: row.FRK_recipe
+            }));
+        });
+
+        const recipes = Array.from(recipeSet).map(JSON.parse);
+        const detailRecipes = Array.from(detailrecipeSet).map(JSON.parse);
+        const ingredients = Array.from(ingredientSet).map(JSON.parse);
+        const reviews = Array.from(reviewSet).map(JSON.parse);
+        const steps = Array.from(stepSet).map(JSON.parse);
+
+        callback(null, { recipes, detailRecipes, ingredients, reviews, steps });
+        db.close();
+    });
+  });
+}
+
+
   static getFullRecipeById(id, callback) {
     const db = new sqlite3.Database('DB_Notebook.db');
     const sql = `
@@ -81,7 +177,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
         callback(err, null);
         return;
       }
-      if (!rows || rows.length === 0) {
+      if (!rows || rows.length === i) {
         callback(null, null); // Recipe not found
         return;
       }
@@ -147,7 +243,6 @@ const db = new sqlite3.Database('DB_Notebook.db');
   
     db.close();
   }
-  
 
   static deleteimage(pathimage, callback) {    
     const filePathToDelete = './public/uploads/' +pathimage; // Replace with the path to the file you want to delete
@@ -185,7 +280,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
           callback(err);
           return;
         }
-        if (this.changes === 0) {
+        if (this.changes === i) {
           callback(null, null); // User not found or not updated
           return;
         }
@@ -342,7 +437,7 @@ static searchRecipes(Nom_Recipe, callback) {
           callback(err);
           return;
         }
-        if (this.changes === 0) {
+        if (this.changes === i) {
           callback(null, false); // Recipe not found or not deleted
           return;
         }

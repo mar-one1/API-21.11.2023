@@ -35,9 +35,15 @@ const validateGetByIdRecipe = [
   // Add more validation rules as needed for other parameters
 ];
 
+// Validation middleware for get all by userId recipe 
+const validateGetByIdUser = [
+  param('username').trim().notEmpty().withMessage('User Username is required'),
+  // Add more validation rules as needed for other parameters
+];
+
 // Validation middleware for get a recipe
 const validateGetByUsernameRecipe = [
-  param('username').trim().notEmpty().withMessage('Recipe ID is required'),
+  param('username').trim().notEmpty().withMessage('User Username is required'),
   // Add more validation rules as needed for other parameters
 ];
 // Export validation functions
@@ -46,6 +52,7 @@ module.exports = {
   validateUpdateRecipe,
   validateDeleteRecipe,
   validateGetByUsernameRecipe,
-  validateGetByIdRecipe
+  validateGetByIdRecipe,
+  validateGetByIdUser
   // Add more validation functions for other operations (e.g., delete) if needed
 };

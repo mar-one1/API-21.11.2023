@@ -76,6 +76,24 @@ router.post('/upload/:id', upload.single('image'),async  (req, res) => {
 });
 
 // Get a recipe by ID
+router.get('/user/full/:username',validateRecipe.validateGetByIdUser, (req, res) => {
+  const username = req.params.username;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  Recipe.getAllFullRecipesByUsername(username, (err, recipe) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!recipe) {
+      return res.status(406).json({ error: 'Recipe not found' });
+    }
+    res.json(recipe);
+  });
+});
+
+// Get a recipe by ID
 router.get('/:id',validateRecipe.validateGetByIdRecipe, (req, res) => {
   const recipeId = req.params.id;
   const errors = validationResult(req);
@@ -87,7 +105,7 @@ router.get('/:id',validateRecipe.validateGetByIdRecipe, (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!recipe) {
-      return res.status(406).json({ error: 'Recipe not found' });
+      return res.status(406).json({ error: 'Recipes not found' });
     }
     res.json(recipe);
   });
