@@ -177,7 +177,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
         callback(err, null);
         return;
       }
-      if (!rows || rows.length === i) {
+      if (!rows || rows.length === 0) {
         callback(null, null); // Recipe not found
         return;
       }
@@ -280,7 +280,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
           callback(err);
           return;
         }
-        if (this.changes === i) {
+        if (this.changes === 0) {
           callback(null, null); // User not found or not updated
           return;
         }
@@ -437,7 +437,7 @@ static searchRecipes(Nom_Recipe, callback) {
           callback(err);
           return;
         }
-        if (this.changes === i) {
+        if (this.changes === 0) {
           callback(null, false); // Recipe not found or not deleted
           return;
         }
