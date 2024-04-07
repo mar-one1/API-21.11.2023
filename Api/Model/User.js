@@ -24,7 +24,8 @@ class User
       icon,
       password,
       grade,
-      status
+      status,
+      url
     ) {
       this.id = id;
       this.username = username;
@@ -37,6 +38,7 @@ class User
       this.password = password;
       this.grade = grade;
       this.status = status;
+      this.url = url;
     }
     
   
@@ -197,7 +199,7 @@ class User
     ) {
       const db = new sqlite3.Database('DB_Notebook.db');
       db.run(
-        'UPDATE User SET Icon_user = ? WHERE username = ?',
+        'UPDATE User SET Url_image = ? WHERE username = ?',
         [imagebyte,username],
         function (err) {
           if (err) {
@@ -264,7 +266,8 @@ class User
             row.Icon_user=null,
             row.password,
             row.Grade_user,
-            row.Status_user
+            row.Status_user,
+            row.Url_image
           );
           callback(null, user);
         }
@@ -400,7 +403,7 @@ class User
     static updateImageUserByUsername(username,icon, callback) {
       const db = new sqlite3.Database('DB_Notebook.db');
       db.run(
-        'UPDATE User SET  Icon_user = ? WHERE username = ?',
+        'UPDATE User SET  Url_image = ? WHERE username = ?',
         [ icon, username],
         function (err) {
           if (err) {

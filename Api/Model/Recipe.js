@@ -4,6 +4,7 @@ const DetailRecipeModel = require('./Detail_recipe'); // Import the User model
 const IngredientModel = require('./Ingredient_recipe'); // Import the User model
 const ReviewModel = require('./Review_recipe'); // Import the User model
 const StepModel = require('./Step_recipe'); // Import the User model
+const fs = require('fs');
 class Recipe {
   constructor(id, name, icon, fav, userId) {
     this.id = id;
@@ -162,14 +163,15 @@ const db = new sqlite3.Database('DB_Notebook.db');
   static getFullRecipeById(id, callback) {
     const db = new sqlite3.Database('DB_Notebook.db');
     const sql = `
-      SELECT Recipe.*, Detail_recipe.*, Ingredient_recipe.*, Step_recipe.*,Review_recipe.*
-      FROM Recipe
-      LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
-      LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
-      LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
-      LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
-      LEFT JOIN FavoriteUserRecipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
-      WHERE Recipe.Id_recipe = ?
+    SELECT Recipe.*,User.*, Detail_recipe.*, Ingredient_recipe.*, Step_recipe.*,Review_recipe.*
+          FROM Recipe
+          LEFT JOIN User ON Recipe.Frk_user = User.Id_user
+          LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
+          LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
+          LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
+          LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
+          LEFT JOIN FavoriteUserRecipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
+          WHERE Recipe.Id_recipe = ?
     `;
   
     db.all(sql, [id], (err, rows) => {
@@ -181,7 +183,21 @@ const db = new sqlite3.Database('DB_Notebook.db');
         callback(null, null); // Recipe not found
         return;
       }
-    
+       //a complete////!
+      const user = new UserModel(
+        rows[0].Id_user,
+        rows[0].username,
+        rows[0].Firstname_user,
+        rows[0].Lastname_user,
+        rows[0].Birthday_user,
+        rows[0].Email_user,
+        rows[0].Phonenumber_user,
+        rows[0].Icon_user=null,
+        rows[0].password,
+        rows[0].Grade_user,
+        rows[0].Status_user,
+        rows[0].Url_image,
+      );
       // Create instances for the main recipe and its detail
       const recipe = new Recipe(
         rows[0].Id_recipe,
@@ -238,11 +254,15 @@ const db = new sqlite3.Database('DB_Notebook.db');
       const steps = Array.from(stepSet).map(JSON.parse);
     
       // Pass all the data to the callback
-      callback(null, { recipe, detailRecipe, ingredients, reviews, steps });
+      callback(null, { recipe,user, detailRecipe, ingredients, reviews, steps });
     });
   
     db.close();
   }
+  
+
+  
+
 
   static deleteimage(pathimage, callback) {    
     const filePathToDelete = './public/uploads/' +pathimage; // Replace with the path to the file you want to delete
@@ -398,6 +418,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
     db.close();
   });
   }
+
 
 
 static searchRecipes(Nom_Recipe, callback) {
