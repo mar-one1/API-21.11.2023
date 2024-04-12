@@ -46,6 +46,7 @@ const validateGetByUsernameRecipe = [
   param('username').trim().notEmpty().withMessage('User Username is required'),
   // Add more validation rules as needed for other parameters
 ];
+
 // Export validation functions
 module.exports = {
   validateCreateRecipe,

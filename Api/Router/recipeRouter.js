@@ -112,6 +112,22 @@ router.get('/:id',validateRecipe.validateGetByIdRecipe, (req, res) => {
   });
 });
 
+// Route to get recipes by conditions
+router.get('/filters/recipes', (req, res) => {
+  const conditions = req.query; // Get query parameters as conditions
+  console.log(req.query);
+  // Call the method to get recipes by conditions
+  Recipe.getRecipesByConditions(conditions, (err, recipes) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (!recipes || recipes.length === 0) {
+      return res.status(404).json({ error: 'Recipes not found' });
+    }
+    res.json(recipes);
+  });
+});
+
 // Get all recipes
 router.get('/', (req, res) => {
   Recipe.getAllRecipes((err, recipes) => {

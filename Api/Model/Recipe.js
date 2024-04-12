@@ -160,6 +160,61 @@ const db = new sqlite3.Database('DB_Notebook.db');
 }
 
 
+static getRecipesByConditions(conditions, callback) {
+  const db = new sqlite3.Database('DB_Notebook.db');
+  let query = `
+  SELECT 
+    Recipe.*, 
+    Detail_recipe.*, 
+    Ingredient_recipe.*, 
+    Step_recipe.*, 
+    Review_recipe.*
+  FROM Recipe
+  LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
+  LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
+  LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
+  LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe`;
+
+  let params = [];
+  
+  let index = 0;
+  for (const key in conditions) {
+    if (index === 0) {
+      query += ' WHERE';
+    } else {
+      query += ' AND';
+    }
+    query += ` ${key} = ?`;
+    params.push(conditions[key]);
+    index++;
+  }
+
+  db.all(query, params, (err, rows) => {
+    if (err) {
+      callback(err);
+      db.close();
+      return;
+    }
+    const recipeSet = new Set();
+    rows.forEach(row => {
+      // Use JSON.stringify to compare recipe objects as strings
+      recipeSet.add(JSON.stringify({
+        id: row.Id_recipe,
+        name: row.Nom_Recipe,
+        icon: row.Icon_recipe,
+        fav: row.Fav_recipe,
+        userId: row.Frk_user
+      }));
+    });
+    // Convert the set back to an array of recipes
+    const uniqueRecipes = Array.from(recipeSet).map(JSON.parse);
+    callback(null, { recipes: uniqueRecipes });
+    db.close();
+  });
+}
+
+
+
   static getFullRecipeById(id, callback) {
     const db = new sqlite3.Database('DB_Notebook.db');
     const sql = `
