@@ -24,6 +24,7 @@ const stepRecipeRouter = require('./Api/Router/step_recipeRouter');
 const reviewRecipeRouter = require('./Api/Router/review_recipeRouter');
 const produitRouter = require('./Api/Router/produit_Router');
 const favRouter = require('./Api/Router/fav_user_recipe_Router');
+const recipeModelRouter = require('./Api/Repo/recipeModelRouter');
 
 
 
@@ -51,6 +52,7 @@ app.use('/steprecipes', stepRecipeRouter);
 app.use('/reviewrecipes', reviewRecipeRouter);
 app.use('/produits',produitRouter);
 app.use('/favorites',favRouter);
+app.use('/api', recipeModelRouter);
 // Serve Swagger UI
 
 

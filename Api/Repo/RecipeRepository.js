@@ -46,6 +46,33 @@ class RecipeRepository {
       throw error;
     }
   }
+
+
+static async getRecipesByConditions(conditions, callback) {
+  // Define conditions for querying
+  const whereClause = {};
+  for (const key in conditions) {
+    whereClause[key] = conditions[key];
+  }
+
+  // Perform left join between Recipe and associated models
+  Recipe.findAll({
+    where: whereClause,
+    include: [
+      { model: Detail_recipe },
+      { model: Ingredient_recipe },
+      { model: Step_recipe },
+      { model: Review_recipe }
+    ]
+  }).then(recipes => {
+    // Process fetched recipes
+    // In this case, you don't need to handle duplicates because Sequelize handles it automatically
+    callback(null, { recipes });
+  }).catch(err => {
+    // Handle error
+    callback(err);
+  });
+}
 }
 
 module.exports = RecipeRepository;

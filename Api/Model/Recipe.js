@@ -175,19 +175,41 @@ static getRecipesByConditions(conditions, callback) {
   LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
   LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe`;
 
-  let params = [];
-  
-  let index = 0;
-  for (const key in conditions) {
+let params = [];
+
+let index = 0;
+for (const key in conditions) {
+  if (key !== 'searchText') {
     if (index === 0) {
       query += ' WHERE';
     } else {
       query += ' AND';
     }
-    query += ` ${key} = ?`;
-    params.push(conditions[key]);
+    query += ` ${key} LIKE ?`;
+    params.push(`%${conditions[key]}%`);
     index++;
-  }
+}
+}
+
+// Add search text condition separately
+if (conditions.searchText) {
+  query += ` AND (
+    Recipe.Nom_Recipe LIKE ? OR
+    Detail_recipe.Dt_recipe LIKE ? OR
+    Ingredient_recipe.Ingredient_recipe LIKE ? OR
+    Step_recipe.Detail_Step_recipe LIKE ? OR
+    Review_recipe.Detail_Review_recipe LIKE ?
+  )`;
+
+  // Add search text parameters
+  params.push(`%${conditions.searchText}%`);
+  params.push(`%${conditions.searchText}%`);
+  params.push(`%${conditions.searchText}%`);
+  params.push(`%${conditions.searchText}%`);
+  params.push(`%${conditions.searchText}%`);
+}
+
+
 
   db.all(query, params, (err, rows) => {
     if (err) {
