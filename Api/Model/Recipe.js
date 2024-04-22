@@ -163,53 +163,53 @@ const db = new sqlite3.Database('DB_Notebook.db');
 static getRecipesByConditions(conditions, callback) {
   const db = new sqlite3.Database('DB_Notebook.db');
   let query = `
-  SELECT 
-    Recipe.*, 
-    Detail_recipe.*, 
-    Ingredient_recipe.*, 
-    Step_recipe.*, 
-    Review_recipe.*
-  FROM Recipe
-  LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
-  LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
-  LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
-  LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe`;
+    SELECT 
+      Recipe.*, 
+      Detail_recipe.*, 
+      Ingredient_recipe.*, 
+      Step_recipe.*, 
+      Review_recipe.*
+    FROM Recipe
+    LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
+    LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
+    LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
+    LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe`;
 
-let params = [];
+  let params = [];
+  let whereClauseAdded = false;
 
-let index = 0;
-for (const key in conditions) {
-  if (key !== 'searchText') {
-    if (index === 0) {
-      query += ' WHERE';
-    } else {
-      query += ' AND';
+  // Check if searchText is provided
+  if (conditions.searchText) {
+    query += ` WHERE (
+      Recipe.Nom_Recipe LIKE ? OR
+      Detail_recipe.Dt_recipe LIKE ? OR
+      Ingredient_recipe.Ingredient_recipe LIKE ? OR
+      Step_recipe.Detail_Step_recipe LIKE ? OR
+      Review_recipe.Detail_Review_recipe LIKE ?
+    )`;
+
+    // Add searchText parameters
+    params.push(`%${conditions.searchText}%`);
+    params.push(`%${conditions.searchText}%`);
+    params.push(`%${conditions.searchText}%`);
+    params.push(`%${conditions.searchText}%`);
+    params.push(`%${conditions.searchText}%`);
+
+    whereClauseAdded = true;
+  }
+
+  for (const key in conditions) {
+    if (key !== 'searchText') {
+      if (!whereClauseAdded) {
+        query += ' WHERE';
+        whereClauseAdded = true;
+      } else {
+        query += ' AND';
+      }
+      query += ` ${key} LIKE ?`;
+      params.push(`%${conditions[key]}%`);
     }
-    query += ` ${key} LIKE ?`;
-    params.push(`%${conditions[key]}%`);
-    index++;
-}
-}
-
-// Add search text condition separately
-if (conditions.searchText) {
-  query += ` AND (
-    Recipe.Nom_Recipe LIKE ? OR
-    Detail_recipe.Dt_recipe LIKE ? OR
-    Ingredient_recipe.Ingredient_recipe LIKE ? OR
-    Step_recipe.Detail_Step_recipe LIKE ? OR
-    Review_recipe.Detail_Review_recipe LIKE ?
-  )`;
-
-  // Add search text parameters
-  params.push(`%${conditions.searchText}%`);
-  params.push(`%${conditions.searchText}%`);
-  params.push(`%${conditions.searchText}%`);
-  params.push(`%${conditions.searchText}%`);
-  params.push(`%${conditions.searchText}%`);
-}
-
-
+  }
 
   db.all(query, params, (err, rows) => {
     if (err) {
@@ -230,10 +230,11 @@ if (conditions.searchText) {
     });
     // Convert the set back to an array of recipes
     const uniqueRecipes = Array.from(recipeSet).map(JSON.parse);
-    callback(null, { recipes: uniqueRecipes });
+    callback(null, uniqueRecipes);
     db.close();
   });
 }
+
 
 
 
