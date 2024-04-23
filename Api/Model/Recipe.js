@@ -159,6 +159,124 @@ const db = new sqlite3.Database('DB_Notebook.db');
   });
 }
 
+  static insertRecipeWithDetails(recipeData, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+
+    const { recipe, detailRecipe, ingredients, reviews, steps } = recipeData;
+
+    db.serialize(() => {
+      db.run('BEGIN TRANSACTION');
+
+      db.run(
+        `INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe, Frk_user) VALUES (?, ?, ?, ?)`,
+        [recipe.name, recipe.icon, recipe.fav, recipe.userId],
+        function (err) {
+          if (err) {
+            db.run('ROLLBACK');
+            db.close();
+            console.error('Error inserting recipe:', err);
+            return callback(err);
+          }
+
+          const recipeId = this.lastID;
+
+          db.run(
+            `INSERT INTO Detail_recipe (Dt_recipe, Dt_recipe_time, Rate_recipe, Level_recipe, Calories_recipe, FRK_recipe) VALUES (?, ?, ?, ?, ?, ?)`,
+            [detailRecipe.detail, detailRecipe.time, detailRecipe.rate, detailRecipe.level, detailRecipe.calories, recipeId],
+            function (err) {
+              if (err) {
+                db.run('ROLLBACK');
+                db.close();
+                console.error('Error inserting detail recipe:', err);
+                return callback(err);
+              }
+
+              // Insert ingredients
+              Recipe.insertIngredients(db, ingredients, recipeId, (err) => {
+                if (err) {
+                  db.run('ROLLBACK');
+                  db.close();
+                  console.error('Error inserting ingredients:', err);
+                  return callback(err);
+                }
+
+                // Insert reviews
+                Recipe.insertReviews(db, reviews, recipeId, (err) => {
+                  if (err) {
+                    db.run('ROLLBACK');
+                    db.close();
+                    console.error('Error inserting reviews:', err);
+                    return callback(err);
+                  }
+
+                  // Insert steps
+                  Recipe.insertSteps(db, steps, recipeId, (err) => {
+                    if (err) {
+                      db.run('ROLLBACK');
+                      db.close();
+                      console.error('Error inserting steps:', err);
+                      return callback(err);
+                    }
+
+                    // Commit transaction
+                    db.run('COMMIT', function (err) {
+                      if (err) {
+                        db.close();
+                        console.error('Error committing transaction:', err);
+                        return callback(err);
+                      }
+                      console.log('Recipe inserted successfully with ID:', recipeId);
+                      callback(null, recipeId);
+                      db.close();
+                    });
+                  });
+                });
+              });
+            }
+          );
+        }
+      );
+    });
+  }
+
+  static insertIngredients(db, ingredients, recipeId, callback) {
+    const insertIngredient = db.prepare(`INSERT INTO Ingredient_recipe (Ingredient_recipe, PoidIngredient_recipe, FRK_recipe) VALUES (?, ?, ?)`);
+    ingredients.forEach(ingredient => {
+      insertIngredient.run(ingredient.ingredient, ingredient.poidIngredient, recipeId, (err) => {
+        if (err) {
+          callback(err);
+          return; // Return to avoid further iterations
+        }
+      });
+    });
+    insertIngredient.finalize(callback); // Return from finalize to ensure it's not called multiple times
+  }
+
+  static insertReviews(db, reviews, recipeId, callback) {
+    const insertReview = db.prepare(`INSERT INTO Review_recipe (Detail_Review_recipe, Rate_Review_recipe, FRK_recipe) VALUES (?, ?, ?)`);
+    reviews.forEach(review => {
+      insertReview.run(review.detailReview, review.rateReview, recipeId, (err) => {
+        if (err) {
+          callback(err);
+          return; // Return to avoid further iterations
+        }
+      });
+    });
+    insertReview.finalize(callback); // Return from finalize to ensure it's not called multiple times
+  }
+
+  static insertSteps(db, steps, recipeId, callback) {
+    const insertStep = db.prepare(`INSERT INTO Step_recipe (Detail_Step_recipe, Image_Step_recipe, Time_Step_recipe, FRK_recipe) VALUES (?, ?, ?, ?)`);
+    steps.forEach(step => {
+      insertStep.run(step.detailStep, step.imageStep, step.timeStep, recipeId, (err) => {
+        if (err) {
+          callback(err);
+          return; // Return to avoid further iterations
+        }
+      });
+    });
+    insertStep.finalize(callback); // Return from finalize to ensure it's not called multiple times
+  }
 
 static getRecipesByConditions(conditions, callback) {
   const db = new sqlite3.Database('DB_Notebook.db');

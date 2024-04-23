@@ -112,6 +112,25 @@ router.get('/:id',validateRecipe.validateGetByIdRecipe, (req, res) => {
   });
 });
 
+// POST route to insert a new recipe with details
+router.post('/recipe',validateRecipe.validateCreateRecipe, async (req, res) => {
+  const recipeData = req.body; // Assuming the request body contains the recipe data
+  const { recipe, detailRecipe, ingredients, reviews, steps } = recipeData;
+  const errors = validationResult(recipe);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  Recipe.insertRecipeWithDetails(recipeData, (err, recipeId) => {
+    if (err) {
+      console.error('Error inserting recipe:', err);
+      return res.status(500).json({ error: 'Error inserting recipe' });
+    }
+    console.log('Recipe inserted successfully with ID:', recipeId);
+    res.status(201).json({ id: recipeId, message: 'Recipe inserted successfully' });
+  });
+});
+
+
 // Route to get recipes by conditions
 router.get('/filters/recipes', (req, res) => {
   const conditions = req.query; // Get query parameters as conditions
