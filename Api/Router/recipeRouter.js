@@ -126,7 +126,7 @@ router.post('/recipe',validateRecipe.validateCreateRecipe, async (req, res) => {
       return res.status(500).json({ error: 'Error inserting recipe' });
     }
     console.log('Recipe inserted successfully with ID:', recipeId);
-    res.status(201).json({ id: recipeId, message: 'Recipe inserted successfully' });
+    res.status(201).json(recipeId);
   });
 });
 

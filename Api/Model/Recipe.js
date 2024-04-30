@@ -201,6 +201,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
                 }
 
                 // Insert reviews
+                /*
                 Recipe.insertReviews(db, reviews, recipeId, (err) => {
                   if (err) {
                     db.run('ROLLBACK');
@@ -208,6 +209,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
                     console.error('Error inserting reviews:', err);
                     return callback(err);
                   }
+                  */
 
                   // Insert steps
                   Recipe.insertSteps(db, steps, recipeId, (err) => {
@@ -236,7 +238,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
           );
         }
       );
-    });
+    //});
   }
 
   static insertIngredients(db, ingredients, recipeId, callback) {
