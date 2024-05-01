@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const UserModel = require('./User'); // Import the User model
 const DetailRecipeModel = require('./Detail_recipe'); // Import the User model
-const IngredientModel = require('./Ingredient_recipe'); // Import the User model
+const IngredientModel = require('./Ingredient'); // Import the User model
 const ReviewModel = require('./Review_recipe'); // Import the User model
 const StepModel = require('./Step_recipe'); // Import the User model
 const fs = require('fs');
@@ -81,12 +81,12 @@ const db = new sqlite3.Database('DB_Notebook.db');
     const sql = `
         SELECT Recipe.*, 
             Detail_recipe.*, 
-            Ingredient_recipe.*, 
+            Ingredient.*, 
             Step_recipe.*, 
             Review_recipe.*
         FROM Recipe
         LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
-        LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
+        LEFT JOIN Ingredient ON Recipe.Id_recipe = Ingredient.Frk_recipe
         LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
         LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
         WHERE Recipe.Frk_user = ?
@@ -125,9 +125,9 @@ const db = new sqlite3.Database('DB_Notebook.db');
             }));
 
             ingredientSet.add(JSON.stringify({
-                id: row.Id_Ingredient_recipe,
+                id: row.Id_Ingredient,
                 ingredient: row.Ingredient_recipe,
-                poidIngredient: row.PoidIngredient_recipe,
+                poidIngredient: row.PoidIngredient,
                 recipeId: row.FRK_recipe
             }));
 
@@ -242,7 +242,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
   }
 
   static insertIngredients(db, ingredients, recipeId, callback) {
-    const insertIngredient = db.prepare(`INSERT INTO Ingredient_recipe (Ingredient_recipe, PoidIngredient_recipe, FRK_recipe) VALUES (?, ?, ?)`);
+    const insertIngredient = db.prepare(`INSERT INTO Ingredient (Ingredient, PoidIngredient, FRK_recipe) VALUES (?, ?, ?)`);
     ingredients.forEach(ingredient => {
       insertIngredient.run(ingredient.ingredient, ingredient.poidIngredient, recipeId, (err) => {
         if (err) {
@@ -286,12 +286,12 @@ static getRecipesByConditions(conditions, callback) {
     SELECT 
       Recipe.*, 
       Detail_recipe.*, 
-      Ingredient_recipe.*, 
+      Ingredient.*, 
       Step_recipe.*, 
       Review_recipe.*
     FROM Recipe
     LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
-    LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
+    LEFT JOIN Ingredient ON Recipe.Id_recipe = Ingredient.Frk_recipe
     LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
     LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe`;
 
@@ -303,7 +303,7 @@ static getRecipesByConditions(conditions, callback) {
     query += ` WHERE (
       Recipe.Nom_Recipe LIKE ? OR
       Detail_recipe.Dt_recipe LIKE ? OR
-      Ingredient_recipe.Ingredient_recipe LIKE ? OR
+      Ingredient.Ingredient_recipe LIKE ? OR
       Step_recipe.Detail_Step_recipe LIKE ? OR
       Review_recipe.Detail_Review_recipe LIKE ?
     )`;
@@ -361,11 +361,11 @@ static getRecipesByConditions(conditions, callback) {
   static getFullRecipeById(id, callback) {
     const db = new sqlite3.Database('DB_Notebook.db');
     const sql = `
-    SELECT Recipe.*,User.*, Detail_recipe.*, Ingredient_recipe.*, Step_recipe.*,Review_recipe.*
+    SELECT Recipe.*,User.*, Detail_recipe.*, Ingredient.*, Step_recipe.*,Review_recipe.*
           FROM Recipe
           LEFT JOIN User ON Recipe.Frk_user = User.Id_user
           LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
-          LEFT JOIN Ingredient_recipe ON Recipe.Id_recipe = Ingredient_recipe.Frk_recipe
+          LEFT JOIN Ingredient ON Recipe.Id_recipe = Ingredient.Frk_recipe
           LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
           LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
           LEFT JOIN FavoriteUserRecipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
@@ -424,9 +424,9 @@ static getRecipesByConditions(conditions, callback) {
       rows.forEach(row => {
         // Ensure uniqueness for each entity type
         ingredientSet.add(JSON.stringify({
-          id: row.Id_Ingredient_recipe,
+          id: row.Id_Ingredient,
           ingredient: row.Ingredient_recipe,
-          poidIngredient: row.PoidIngredient_recipe,
+          poidIngredient: row.PoidIngredient,
           recipeId: row.FRK_recipe
         }));
     
