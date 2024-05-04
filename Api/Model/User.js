@@ -77,6 +77,7 @@ class User
       password,
       grade,
       status,
+      url,
       callback
     ) {
       const db = new sqlite3.Database('DB_Notebook.db');
@@ -123,7 +124,8 @@ class User
                 icon,
                 password,
                 grade,
-                status
+                status,
+                url
               );
               db.close();
               callback(null, newUser);
@@ -183,7 +185,8 @@ class User
             row.Icon_user=null,
             row.password,
             row.Grade_user,
-            row.Status_user
+            row.Status_user,
+            row.Url_image
           );
           callback(null, user);
         }
@@ -315,7 +318,8 @@ class User
             row.Icon_user,
             row.password,
             row.Grade_user,
-            row.Status_user
+            row.Status_user,
+            row.Url_image
           );
         });
         callback(null, users);
@@ -327,8 +331,8 @@ class User
     static updateUser(UserId,username,firstname,lastname,birthday,email,phoneNumber,icon,password,grade,status, callback) {
       const db = new sqlite3.Database('DB_Notebook.db');
       db.run(
-        'UPDATE User SET Firstname_user = ?, Lastname_user = ?, Birthday_user = ?, Email_user = ?, Phonenumber_user = ?, Icon_user = ?, password = ?, Grade_user = ?, Status_user = ? WHERE Id_user = ?',
-        [firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status,UserId],
+        'UPDATE User SET Firstname_user = ?, Lastname_user = ?, Birthday_user = ?, Email_user = ?, Phonenumber_user = ?, Icon_user = ?, password = ?, Grade_user = ?, Status_user = ?,Url_image = ? WHERE Id_user = ?',
+        [firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status,url,UserId],
         function (err) {
           if (err) {
             callback(err);
@@ -349,20 +353,21 @@ class User
             icon,
             password,
             grade,
-            status
+            status,
+            url
             );
           callback(null, updatedUser);
           });
       db.close();
     }
   
-    static updateUserByUsername(username, firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, callback) {
+    static updateUserByUsername(username, firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, url, callback) {
     const db = new sqlite3.Database('DB_Notebook.db');
     console.log("test" + username);
     
     db.run(
-        'UPDATE User SET Firstname_user = ?, Lastname_user = ?, Birthday_user = ?, Email_user = ?, Phonenumber_user = ?, Icon_user = ?, password = ?, Grade_user = ?, Status_user = ? WHERE username = ?',
-        [firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, username],
+        'UPDATE User SET Firstname_user = ?, Lastname_user = ?, Birthday_user = ?, Email_user = ?, Phonenumber_user = ?, Icon_user = ?, password = ?, Grade_user = ?, Status_user = ?, Url_image = ? WHERE username = ?',
+        [firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, url, username],
         function (err) {
             if (err) {
                 callback(err);
@@ -391,7 +396,8 @@ class User
                 icon,
                 password,
                 grade,
-                status
+                status,
+                url
             );
             console.log(updatedUser);
             callback(null, updatedUser);
@@ -426,7 +432,8 @@ class User
             icon,
             password,
             grade,
-            status
+            status,
+            url
             );
           callback(null, updatedUser);
           });

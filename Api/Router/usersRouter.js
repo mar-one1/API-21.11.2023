@@ -216,13 +216,14 @@ router.put('/:id', validateUser.validateUserUpdate, (req, res) => {
     password,
     grade,
     status,
+    url,
   } = req.body;
    // Check for validation errors
    const errors = validationResult(req);
    if (!errors.isEmpty()) {
      return res.status(400).json({ errors: errors.array() });
    }
-  User.updateUser(userId,username,firstname,lastname,birthday,email,phoneNumber,icon,password,grade,status, (err, updatedUser) => {
+  User.updateUser(userId,username,firstname,lastname,birthday,email,phoneNumber,icon,password,grade,status,url, (err, updatedUser) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -247,13 +248,14 @@ router.put('/filtre/:username',  validateUser.validateUserUpdate ,async (req, re
     password,
     grade,
     status,
+    url,
   } = req.body;
    // Check for validation errors
    const errors = validationResult(req);
    if (!errors.isEmpty()) {
      return res.status(400).json({ errors: errors.array() });
    }
-  User.updateUserByUsername(username,firstname,lastname,birthday,email,phoneNumber,icon,password,grade,status, (err, updatedUser) => {
+  User.updateUserByUsername(username,firstname,lastname,birthday,email,phoneNumber,icon,password,grade,status,url, (err, updatedUser) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
