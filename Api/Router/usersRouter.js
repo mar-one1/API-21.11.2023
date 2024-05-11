@@ -60,6 +60,7 @@ router.post('/', validateUser.validateUserRegistration, async (req, res) => {
     password,
     grade,
     status,
+    url,
   } = req.body;
 
   // Check for validation errors
@@ -80,6 +81,7 @@ router.post('/', validateUser.validateUserRegistration, async (req, res) => {
   password,
   grade,
   status,
+  url,
   (err, newUser) => {
     
     if (err) {
@@ -104,7 +106,7 @@ router.delete('/delete/:path', (req, res) => {
     }
     res.status(201).json(validite);
   });
-})
+});
 
 router.post('/upload/:username', upload.single('image'),async  (req, res) => {
   const username = req.params.username;
