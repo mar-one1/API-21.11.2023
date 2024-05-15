@@ -480,7 +480,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
       db.close();
     } catch (err) {
       db.close();
-      console.error('Error retrieving recipes by id:', err);
+      console.error('Error full retrieving recipes by id recipe: '+id, err);
       callback(err, null);
     }
   }

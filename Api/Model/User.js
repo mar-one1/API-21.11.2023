@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const fs = require('fs');
-    const path = require('path');
+const path = require('path');
 const { isNull } = require('util');
 
 /**
@@ -11,77 +11,76 @@ const { isNull } = require('util');
  *   name: Users
  *   description: User management endpoints
  */
-class User
-{
-    constructor(
-      id,
-      username,
-      firstname,
-      lastname,
-      birthday,
-      email,
-      phoneNumber,
-      icon,
-      password,
-      grade,
-      status,
-      url
-    ) {
-      this.id = id;
-      this.username = username;
-      this.firstname = firstname;
-      this.lastname = lastname;
-      this.birthday = birthday;
-      this.email = email;
-      this.phoneNumber = phoneNumber;
-      this.icon = icon;
-      this.password = password;
-      this.grade = grade;
-      this.status = status;
-      this.url = url;
-    }
-    
-  
-     /**
-   * @swagger
-   * /users:
-   *   post:
-   *     summary: Create a new user
-   *     tags: [Users]
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             $ref: '#/components/schemas/User'
-   *     responses:
-   *       '201':
-   *         description: Successfully created a new user
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/User'
-   *       '400':
-   *         description: Bad request, invalid user data
-   *       '500':
-   *         description: Internal server error
-   */
-    static createUser(
-      username,
-      firstname,
-      lastname,
-      birthday,
-      email,
-      phoneNumber,
-      icon,
-      password,
-      grade,
-      status,
-      url,
-      callback
-    ) {
-      const db = new sqlite3.Database('DB_Notebook.db');
-    
+class User {
+  constructor(
+    id,
+    username,
+    firstname,
+    lastname,
+    birthday,
+    email,
+    phoneNumber,
+    icon,
+    password,
+    grade,
+    status,
+    url
+  ) {
+    this.id = id;
+    this.username = username;
+    this.firstname = firstname;
+    this.lastname = lastname;
+    this.birthday = birthday;
+    this.email = email;
+    this.phoneNumber = phoneNumber;
+    this.icon = icon;
+    this.password = password;
+    this.grade = grade;
+    this.status = status;
+    this.url = url;
+  }
+
+
+  /**
+* @swagger
+* /users:
+*   post:
+*     summary: Create a new user
+*     tags: [Users]
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             $ref: '#/components/schemas/User'
+*     responses:
+*       '201':
+*         description: Successfully created a new user
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/User'
+*       '400':
+*         description: Bad request, invalid user data
+*       '500':
+*         description: Internal server error
+*/
+  static createUser(
+    username,
+    firstname,
+    lastname,
+    birthday,
+    email,
+    phoneNumber,
+    icon,
+    password,
+    grade,
+    status,
+    url,
+    callback
+  ) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    try {
       // Check if the user already exists
       db.get(
         'SELECT * FROM User WHERE username = ?',
@@ -92,15 +91,15 @@ class User
             callback(err);
             return;
           }
-    
+
           if (row) {
             db.close();
             console.log("User already exists");
             // User already exists, handle accordingly (e.g., return an error)
-           callback(new Error('User already exists'));
+            callback(new Error('User already exists'));
             return;
           }
-    
+
           // User doesn't exist, insert them into the database
           db.run(
             'INSERT INTO User (username, Firstname_user, Lastname_user, Birthday_user, Email_user, Phonenumber_user, Icon_user, password, Grade_user, Status_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -111,7 +110,7 @@ class User
                 callback(err);
                 return;
               }
-    
+
               // Fetch the inserted user
               const newUser = new User(
                 this.lastID,
@@ -133,9 +132,14 @@ class User
           );
         }
       );
+    } catch (err) {
+      db.close();
+      console.error('Error Create User', err);
+      callback(err, null);
     }
-    
-    
+  }
+
+
   /**
    * @swagger
    * /users/{userId}:
@@ -160,8 +164,9 @@ class User
    *       '500':
    *         description: Internal server error
    */
-    static getUserById(id, callback) {
-      const db = new sqlite3.Database('DB_Notebook.db');
+  static getUserById(id, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    try {
       db.get(
         'SELECT * FROM User WHERE Id_user = ?',
         [id],
@@ -182,7 +187,7 @@ class User
             row.Birthday_user,
             row.Email_user,
             row.Phonenumber_user,
-            row.Icon_user=null,
+            row.Icon_user = null,
             row.password,
             row.Grade_user,
             row.Status_user,
@@ -192,18 +197,24 @@ class User
         }
       );
       db.close();
+    } catch (err) {
+      db.close();
+      console.error('Error getting user by id: ' + id, err);
+      callback(err, null);
     }
-  
+  }
 
-    static async UpdateUserImage(
-      username,
-      imagebyte,
-      callback
-    ) {
-      const db = new sqlite3.Database('DB_Notebook.db');
+
+  static async UpdateUserImage(
+    username,
+    imagebyte,
+    callback
+  ) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    try {
       db.run(
         'UPDATE User SET Url_image = ? WHERE username = ?',
-        [imagebyte,username],
+        [imagebyte, username],
         function (err) {
           if (err) {
             callback(err);
@@ -213,39 +224,51 @@ class User
             callback(null, null); // User not found or not updated
             return;
           }
-        // If the user doesn't exist, add them to the database
+          // If the user doesn't exist, add them to the database
           callback(null, imagebyte);
           console.log(imagebyte);
         });
       db.close();
+    } catch (err) {
+      db.close();
+      console.error('Error Update User Image', err);
+      callback(err, null);
     }
+  }
 
-    static getUserImage(username, callback) {
-      const db = new sqlite3.Database('DB_Notebook.db');
+  static getUserImage(username, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    try {
       db.get(
-          'SELECT Icon_user FROM User WHERE username = ?',
-          [username],
-          (err, row) => {
-              if (err) {
-                  db.close();
-                  callback(err, null);
-                  return;
-              }
-              if (!row) {
-                  db.close();
-                  callback(null, null); // User not found
-                  return;
-              }
-              db.close();
-              // Pass the retrieved image URL or binary data to the callback
-              callback(null, row.Icon_user);
+        'SELECT Icon_user FROM User WHERE username = ?',
+        [username],
+        (err, row) => {
+          if (err) {
+            db.close();
+            callback(err, null);
+            return;
           }
+          if (!row) {
+            db.close();
+            callback(null, null); // User not found
+            return;
+          }
+          db.close();
+          // Pass the retrieved image URL or binary data to the callback
+          callback(null, row.Icon_user);
+        }
       );
-    
+      UpdateUserImage
+    } catch (err) {
+      db.close();
+      console.error('Error get User Image', err);
+      callback(err, null);
     }
-  
-    static getUserByUsername(usernameUser, callback) {
-      const db = new sqlite3.Database('DB_Notebook.db');
+  }
+
+  static getUserByUsername(usernameUser, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    try {
       db.get(
         'SELECT * FROM User WHERE username = ?',
         [usernameUser],
@@ -266,7 +289,7 @@ class User
             row.Birthday_user,
             row.Email_user,
             row.Phonenumber_user,
-            row.Icon_user=null,
+            row.Icon_user = null,
             row.password,
             row.Grade_user,
             row.Status_user,
@@ -276,31 +299,43 @@ class User
         }
       );
       db.close();
+    } catch (err) {
+      db.close();
+      console.error('Error getting user by username: ' + usernameUser, err);
+      callback(err, null);
     }
-    
-    static deleteimage(pathimage, callback) {    
-    const filePathToDelete = './public/uploads/' +pathimage; // Replace with the path to the file you want to delete
-    // Check if the file exists
-    console.log('path for delete '+filePathToDelete);
-    fs.access(filePathToDelete, fs.constants.F_OK, (err) => {
-      if (err) {
-        console.error('File does not exist or cannot be accessed.');
-        return;
-      }
+  }
 
-      // File exists, proceed to delete
-      fs.unlink(filePathToDelete, (unlinkErr) => {
-        if (unlinkErr) {
-          console.error('Error deleting file:', unlinkErr);
+  static deleteimage(pathimage, callback) {
+    try {
+      const filePathToDelete = './public/uploads/' + pathimage; // Replace with the path to the file you want to delete
+      // Check if the file exists
+      console.log('path for delete ' + filePathToDelete);
+      fs.access(filePathToDelete, fs.constants.F_OK, (err) => {
+        if (err) {
+          console.error('File does not exist or cannot be accessed.');
           return;
         }
-        console.log('File deleted successfully.');
-        callback(null, 'File deleted successfully.');
+
+        // File exists, proceed to delete
+        fs.unlink(filePathToDelete, (unlinkErr) => {
+          if (unlinkErr) {
+            console.error('Error deleting file:', unlinkErr);
+            return;
+          }
+          console.log('File deleted successfully.');
+          callback(null, 'File deleted successfully.');
+        });
       });
-    });
-}
-    static getAllUsers(callback) {
-      const db = new sqlite3.Database('DB_Notebook.db');
+    } catch (err) {
+      db.close();
+      console.error('Error delete image user : ' + pathimage, err);
+      callback(err, null);
+    }
+  }
+  static getAllUsers(callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    try {
       db.all('SELECT * FROM User', (err, rows) => {
         if (err) {
           callback(err, null);
@@ -325,14 +360,20 @@ class User
         callback(null, users);
       });
       db.close();
+    } catch (err) {
+      db.close();
+      console.error('Error get All Users', err);
+      callback(err, null);
     }
-  
+  }
 
-    static updateUser(UserId,username,firstname,lastname,birthday,email,phoneNumber,icon,password,grade,status, callback) {
-      const db = new sqlite3.Database('DB_Notebook.db');
+
+  static updateUser(UserId, username, firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    try {
       db.run(
         'UPDATE User SET Firstname_user = ?, Lastname_user = ?, Birthday_user = ?, Email_user = ?, Phonenumber_user = ?, Icon_user = ?, password = ?, Grade_user = ?, Status_user = ?,Url_image = ? WHERE Id_user = ?',
-        [firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status,url,UserId],
+        [firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, url, UserId],
         function (err) {
           if (err) {
             callback(err);
@@ -355,62 +396,74 @@ class User
             grade,
             status,
             url
-            );
+          );
           callback(null, updatedUser);
-          });
+        });
       db.close();
+    } catch (err) {
+      db.close();
+      console.error('Error update User', err);
+      callback(err, null);
     }
-  
-    static updateUserByUsername(username, firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, url, callback) {
+  }
+
+  static updateUserByUsername(username, firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, url, callback) {
     const db = new sqlite3.Database('DB_Notebook.db');
-    console.log("test" + username);
-    
-    db.run(
+    try {
+      console.log("test" + username);
+
+      db.run(
         'UPDATE User SET Firstname_user = ?, Lastname_user = ?, Birthday_user = ?, Email_user = ?, Phonenumber_user = ?, Icon_user = ?, password = ?, Grade_user = ?, Status_user = ?, Url_image = ? WHERE username = ?',
         [firstname, lastname, birthday, email, phoneNumber, icon, password, grade, status, url, username],
         function (err) {
-            if (err) {
-                callback(err);
-                db.close(); // Close the database connection in case of an error
-                return;
-            }
+          if (err) {
+            callback(err);
+            db.close(); // Close the database connection in case of an error
+            return;
+          }
 
-            if (this.changes === 0) {
-                const error = new Error('User not found or not updated');
-                callback(error, null);
-                db.close(); // Close the database connection if no rows were updated
-                return;
-            }
+          if (this.changes === 0) {
+            const error = new Error('User not found or not updated');
+            callback(error, null);
+            db.close(); // Close the database connection if no rows were updated
+            return;
+          }
 
-            const id = this.lastID; // Use `this.lastID` to get the ID of the last inserted row
-            console.log(`Row(s) updated: ${this.changes}` + 'id : ' + id);
+          const id = this.lastID; // Use `this.lastID` to get the ID of the last inserted row
+          console.log(`Row(s) updated: ${this.changes}` + 'id : ' + id);
 
-            const updatedUser = new User(
-                id,
-                username,
-                firstname,
-                lastname,
-                birthday,
-                email,
-                phoneNumber,
-                icon,
-                password,
-                grade,
-                status,
-                url
-            );
-            console.log(updatedUser);
-            callback(null, updatedUser);
+          const updatedUser = new User(
+            id,
+            username,
+            firstname,
+            lastname,
+            birthday,
+            email,
+            phoneNumber,
+            icon,
+            password,
+            grade,
+            status,
+            url
+          );
+          console.log(updatedUser);
+          callback(null, updatedUser);
 
-            db.close(); // Close the database connection after the update
+          db.close(); // Close the database connection after the update
         }
-    );
-}
-    static updateImageUserByUsername(username,icon, callback) {
-      const db = new sqlite3.Database('DB_Notebook.db');
+      );
+    } catch (err) {
+      db.close();
+      console.error('Error update UserBy Username : ' + username, err);
+      callback(err, null);
+    }
+  }
+  static updateImageUserByUsername(username, icon, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    try {
       db.run(
         'UPDATE User SET  Url_image = ? WHERE username = ?',
-        [ icon, username],
+        [icon, username],
         function (err) {
           if (err) {
             callback(err);
@@ -434,37 +487,47 @@ class User
             grade,
             status,
             url
-            );
+          );
           callback(null, updatedUser);
-          });
+        });
       db.close();
-    }
-
-    static deleteUser(UserId, callback) {
-      const db = new sqlite3.Database('DB_Notebook.db');
-      db.run(
-        'DELETE FROM User WHERE Id_user = ?',
-        [UserId],
-        function (err) {
-          if (err) {
-            callback(err);
-            return;
-          }
-          if (this.changes === 0) {
-            callback(null, false); // User not found or not deleted
-            return;
-          }
-          callback(null, true); // User deleted successfully
-        }
-      );
+    } catch (err) {
       db.close();
+      console.error('Error update Image User By Username : '+username, err);
+      callback(err, null);
     }
-
-    
-    // ... (Other methods)
-  
-    // Add more methods as needed (e.g., update, delete, get all users)
   }
-  
-  module.exports = User;
-  
+
+  static deleteUser(UserId, callback) {
+    const db = new sqlite3.Database('DB_Notebook.db');
+    try{
+    db.run(
+      'DELETE FROM User WHERE Id_user = ?',
+      [UserId],
+      function (err) {
+        if (err) {
+          callback(err);
+          return;
+        }
+        if (this.changes === 0) {
+          callback(null, false); // User not found or not deleted
+          return;
+        }
+        callback(null, true); // User deleted successfully
+      }
+    );
+    db.close();
+  } catch (err) {
+    db.close();
+    console.error('Error delete User id : '+UserId, err);
+    callback(err, null);
+  }
+  }
+
+
+  // ... (Other methods)
+
+  // Add more methods as needed (e.g., update, delete, get all users)
+}
+
+module.exports = User;
