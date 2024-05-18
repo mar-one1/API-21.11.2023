@@ -91,12 +91,14 @@ const db = new sqlite3.Database('DB_Notebook.db');
                   Detail_recipe.*, 
                   Ingredient.*, 
                   Step_recipe.*, 
-                  Review_recipe.*
+                  Review_recipe.*,
+                  FavoriteUserRecipe.*
               FROM Recipe
               LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
               LEFT JOIN Ingredient ON Recipe.Id_recipe = Ingredient.Frk_recipe
               LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
               LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
+              LEFT JOIN FavoriteUserRecipe ON Recipe.Id_recipe = FavoriteUserRecipe.Frk_recipe
               WHERE Recipe.Frk_user = ?
           `;
 
@@ -112,6 +114,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
           const ingredientSet = new Set();
           const reviewSet = new Set();
           const stepSet = new Set();
+          const favSet = new Set();
 
           rows.forEach(row => {
             recipeSet.add(JSON.stringify({
@@ -153,6 +156,12 @@ const db = new sqlite3.Database('DB_Notebook.db');
               timeStep: row.Time_Step_recipe,
               recipeId: row.FRK_recipe
             }));
+            
+            favSet.add(JSON.stringify({
+              favRecipe_id: row.favRecipe_id,
+              FRK_user: row.FRK_user,
+              FRK_recipe: row.FRK_recipe
+            }));
           });
 
           const recipes = Array.from(recipeSet).map(JSON.parse);
@@ -160,16 +169,15 @@ const db = new sqlite3.Database('DB_Notebook.db');
           const ingredients = Array.from(ingredientSet).map(JSON.parse);
           const reviews = Array.from(reviewSet).map(JSON.parse);
           const steps = Array.from(stepSet).map(JSON.parse);
-          callback(null, { recipes, detailRecipes, ingredients, reviews, steps });
+          const favs = Array.from(favSet).map(JSON.parse);
+          callback(null, { recipes, detailRecipes, ingredients, reviews, steps, favs });
           db.close();
         });
       });
     } catch (err) {
-      db.close();
       console.error('Error retrieving recipes by username:', err);
       callback(err, null);
     }
-    db.close();
   }
 
   static insertRecipeWithDetails(recipeData, callback) {
@@ -327,10 +335,10 @@ const db = new sqlite3.Database('DB_Notebook.db');
 
         // Add searchText parameters
         params.push(`%${conditions.searchText}%`);
+        /*params.push(`%${conditions.searchText}%`);
         params.push(`%${conditions.searchText}%`);
         params.push(`%${conditions.searchText}%`);
-        params.push(`%${conditions.searchText}%`);
-        params.push(`%${conditions.searchText}%`);
+        params.push(`%${conditions.searchText}%`);*/
 
         whereClauseAdded = true;
       }
