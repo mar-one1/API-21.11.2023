@@ -51,6 +51,7 @@ CREATE TABLE IngredientRecipe (
     Id_ingredient_recipe INTEGER PRIMARY KEY AUTOINCREMENT,
     Ingredient_recipe TEXT,
     PoidIngredient_recipe REAL,
+    unit TEXT,
     FRK_detail_recipe INTEGER,
     FOREIGN KEY (FRK_detail_recipe) REFERENCES DetailRecipe(Id_detail_recipe) ON DELETE CASCADE
 );

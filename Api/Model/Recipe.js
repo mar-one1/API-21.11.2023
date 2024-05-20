@@ -252,9 +252,9 @@ const db = new sqlite3.Database('DB_Notebook.db');
 
   static insertIngredients(db, ingredients, recipeId, callback) {
     try {
-      const insertIngredient = db.prepare(`INSERT INTO Ingredient (Ingredient_recipe, PoidIngredient_recipe, FRK_recipe) VALUES (?, ?, ?)`);
+      const insertIngredient = db.prepare(`INSERT INTO Ingredient (Ingredient_recipe, PoidIngredient_recipe, Unite, FRK_recipe) VALUES (?, ?, ?, ?)`);
       ingredients.forEach(ingredient => {
-        insertIngredient.run(ingredient.ingredient, ingredient.poidIngredient, recipeId, (err) => {
+        insertIngredient.run(ingredient.ingredient, ingredient.poidIngredient,ingredient.unite, recipeId, (err) => {
           if (err) {
             callback(err);
             return; // Return to avoid further iterations
@@ -457,7 +457,8 @@ const db = new sqlite3.Database('DB_Notebook.db');
           ingredientSet.add(JSON.stringify({
             id: row.Id_Ingredient,
             ingredient: row.Ingredient_recipe,
-            poidIngredient: row.PoidIngredient,
+            poidIngredient: row.PoidIngredient_recipe,
+            unite: row.Unite,
             recipeId: row.FRK_recipe
           }));
 
