@@ -73,122 +73,126 @@ const db = new sqlite3.Database('DB_Notebook.db');
   static getAllFullRecipesByUsername(username, callback) {
     const db = new sqlite3.Database('DB_Notebook.db');
     try {
-      UserModel.getUserByUsername(username, (err, user) => {
-        if (err) {
-          db.close();
-          callback(err, null);
-          return;
-        }
-        if (!user) {
-          db.close();
-          callback(null, null); // user not found
-          return;
-        }
-        const id = user.id;
-        console.log(id);
-        const sql = `
-              SELECT Recipe.*, 
-                  Detail_recipe.*, 
-                  Ingredient.*, 
-                  Step_recipe.*, 
-                  Review_recipe.*,
-                  FavoriteUserRecipe.*
-              FROM Recipe
-              LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
-              LEFT JOIN Ingredient ON Recipe.Id_recipe = Ingredient.Frk_recipe
-              LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
-              LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
-              LEFT JOIN FavoriteUserRecipe ON Recipe.Id_recipe = FavoriteUserRecipe.Frk_recipe
-              WHERE Recipe.Frk_user = ?
-          `;
+        UserModel.getUserByUsername(username, (err, user) => {
+            if (err) {
+                db.close();
+                callback(err, null);
+                return;
+            }
+            if (!user) {
+                db.close();
+                callback(null, null); // user not found
+                return;
+            }
+            const id = user.id;
+            console.log(id);
+            const sql = `
+                SELECT Recipe.*, 
+                    Detail_recipe.*, 
+                    Ingredient.*, 
+                    Step_recipe.*, 
+                    Review_recipe.*,
+                    FavoriteUserRecipe.*
+                FROM Recipe
+                LEFT JOIN Detail_recipe ON Recipe.Id_recipe = Detail_recipe.Frk_recipe
+                LEFT JOIN Ingredient ON Recipe.Id_recipe = Ingredient.Frk_recipe
+                LEFT JOIN Step_recipe ON Recipe.Id_recipe = Step_recipe.Frk_recipe
+                LEFT JOIN Review_recipe ON Recipe.Id_recipe = Review_recipe.Frk_recipe
+                LEFT JOIN FavoriteUserRecipe ON Recipe.Id_recipe = FavoriteUserRecipe.Frk_recipe
+                WHERE Recipe.Frk_user = ?
+            `;
 
-        db.all(sql, [id], (err, rows) => {
-          if (err) {
-            db.close();
-            callback(err, null);
-            return;
-          }
+            db.all(sql, [id], (err, rows) => {
+                if (err) {
+                    db.close();
+                    callback(err, null);
+                    return;
+                }
 
-          const recipeSet = new Set();
-          const detailrecipeSet = new Set();
-          const ingredientSet = new Set();
-          const reviewSet = new Set();
-          const stepSet = new Set();
-          const favSet = new Set();
+                const dataMap = new Map(); // Map to store unique entries across all tables
 
-          rows.forEach(row => {
-            recipeSet.add(JSON.stringify({
-              id: row.Id_recipe,
-              name: row.Nom_Recipe,
-              icon: row.Icon_recipe,
-              fav: row.Fav_recipe,
-              userId: row.Frk_user
-            }));
+                rows.forEach(row => {
+                    const recipeId = row.Id_recipe;
 
-            detailrecipeSet.add(JSON.stringify({
-              id: row.Id_detail_recipe,
-              detail: row.Dt_recipe,
-              time: row.Dt_recipe_time,
-              rate: row.Rate_recipe,
-              level: row.Level_recipe,
-              calories: row.Calories_recipe,
-              recipeId: row.FRK_recipe
-            }));
+                    // Check if the entry with the same recipeId already exists in the map
+                    if (!dataMap.has(recipeId)) {
+                        dataMap.set(recipeId, {
+                            recipe: {
+                                id: row.Id_recipe,
+                                name: row.Nom_Recipe,
+                                icon: row.Icon_recipe,
+                                fav: row.Fav_recipe
+                            },
+                           
+                            detail_recipe: {
+                                id: row.Id_detail_recipe,
+                                detail: row.Dt_recipe,
+                                time: row.Dt_recipe_time,
+                                rate: row.Rate_recipe,
+                                level: row.Level_recipe,
+                                calories: row.Calories_recipe
+                            },
+                            ingredients: new Set(),
+                            reviews: new Set(),
+                            steps: new Set(),
+                            favs: new Set()
+                        });
+                    }
 
-            ingredientSet.add(JSON.stringify({
-              id: row.Id_Ingredient,
-              ingredient: row.Ingredient_recipe,
-              poidIngredient: row.PoidIngredient,
-              recipeId: row.FRK_recipe
-            }));
+                    // Add ingredients, reviews, steps, and favs to the corresponding entry
+                    const entry = dataMap.get(recipeId);
+                    entry.ingredients.add(JSON.stringify({
+                        id: row.Id_Ingredient,
+                        ingredient: row.Ingredient_recipe,
+                        poidIngredient: row.PoidIngredient
+                    }));
+                    entry.reviews.add(JSON.stringify({
+                        id: row.Id_Review_recipe,
+                        detailReview: row.Detail_Review_recipe,
+                        rateReview: row.Rate_Review_recipe
+                    }));
+                    entry.steps.add(JSON.stringify({
+                        id: row.Id_Step_recipe,
+                        detailStep: row.Detail_Step_recipe,
+                        imageStep: row.Image_Step_recipe,
+                        timeStep: row.Time_Step_recipe
+                    }));
+                    entry.favs.add(JSON.stringify({
+                        favRecipe_id: row.favRecipe_id,
+                        FRK_user: row.FRK_user
+                    }));
+                });
 
-            reviewSet.add(JSON.stringify({
-              id: row.Id_Review_recipe,
-              detailReview: row.Detail_Review_recipe,
-              rateReview: row.Rate_Review_recipe,
-              recipeId: row.FRK_recipe
-            }));
+                // Convert sets to arrays before returning
+                const uniqueEntries = Array.from(dataMap.values()).map(entry => ({
+                    ...entry,
+                    ingredients: Array.from(entry.ingredients).map(JSON.parse),
+                    reviews: Array.from(entry.reviews).map(JSON.parse),
+                    steps: Array.from(entry.steps).map(JSON.parse),
+                    favs: Array.from(entry.favs).map(JSON.parse)
+                }));
 
-            stepSet.add(JSON.stringify({
-              id: row.Id_Step_recipe,
-              detailStep: row.Detail_Step_recipe,
-              imageStep: row.Image_Step_recipe,
-              timeStep: row.Time_Step_recipe,
-              recipeId: row.FRK_recipe
-            }));
-            
-            favSet.add(JSON.stringify({
-              favRecipe_id: row.favRecipe_id,
-              FRK_user: row.FRK_user,
-              FRK_recipe: row.FRK_recipe
-            }));
-          });
-
-          const recipes = Array.from(recipeSet).map(JSON.parse);
-          const detailRecipes = Array.from(detailrecipeSet).map(JSON.parse);
-          const ingredients = Array.from(ingredientSet).map(JSON.parse);
-          const reviews = Array.from(reviewSet).map(JSON.parse);
-          const steps = Array.from(stepSet).map(JSON.parse);
-          const favs = Array.from(favSet).map(JSON.parse);
-          callback(null, { recipes, detailRecipes, ingredients, reviews, steps, favs });
-          db.close();
+                callback(null, uniqueEntries);
+                db.close();
+            });
         });
-      });
     } catch (err) {
-      console.error('Error retrieving recipes by username:', err);
-      callback(err, null);
+        console.error('Error retrieving recipes by username:', err);
+        callback(err, null);
     }
-  }
+}
+
+
 
   static insertRecipeWithDetails(recipeData, callback) {
     const db = new sqlite3.Database('DB_Notebook.db');
-  
+
     db.serialize(() => {
       db.run('BEGIN TRANSACTION');
-  
+
       try {
         const { recipe, detailRecipe, ingredients, reviews, steps } = recipeData;
-  
+
         db.run(
           `INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe, Frk_user) VALUES (?, ?, ?, ?)`,
           [recipe.name, recipe.icon, recipe.fav, recipe.userId],
@@ -198,9 +202,9 @@ const db = new sqlite3.Database('DB_Notebook.db');
               console.error('Error inserting recipe:', err);
               return callback(err);
             }
-  
+
             const recipeId = this.lastID;
-  
+
             db.run(
               `INSERT INTO Detail_recipe (Dt_recipe, Dt_recipe_time, Rate_recipe, Level_recipe, Calories_recipe, FRK_recipe) VALUES (?, ?, ?, ?, ?, ?)`,
               [detailRecipe.detail, detailRecipe.time, detailRecipe.rate, detailRecipe.level, detailRecipe.calories, recipeId],
@@ -210,7 +214,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
                   console.error('Error inserting detail recipe:', err);
                   return callback(err);
                 }
-  
+
                 // Insert ingredients
                 Recipe.insertIngredients(db, ingredients, recipeId, (err) => {
                   if (err) {
@@ -218,7 +222,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
                     console.error('Error inserting ingredients:', err);
                     return callback(err);
                   }
-  
+
                   // Insert steps
                   Recipe.insertSteps(db, steps, recipeId, (err) => {
                     if (err) {
@@ -226,7 +230,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
                       console.error('Error inserting steps:', err);
                       return callback(err);
                     }
-  
+
                     // Commit transaction
                     db.run('COMMIT', function (err) {
                       if (err) {
@@ -246,15 +250,15 @@ const db = new sqlite3.Database('DB_Notebook.db');
         callback(err);
       }
     });
-    
+
   }
-  
+
 
   static insertIngredients(db, ingredients, recipeId, callback) {
     try {
       const insertIngredient = db.prepare(`INSERT INTO Ingredient (Ingredient_recipe, PoidIngredient_recipe, Unite, FRK_recipe) VALUES (?, ?, ?, ?)`);
       ingredients.forEach(ingredient => {
-        insertIngredient.run(ingredient.ingredient, ingredient.poidIngredient,ingredient.unite, recipeId, (err) => {
+        insertIngredient.run(ingredient.ingredient, ingredient.poidIngredient, ingredient.unite, recipeId, (err) => {
           if (err) {
             callback(err);
             return; // Return to avoid further iterations
@@ -489,7 +493,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
       db.close();
     } catch (err) {
       db.close();
-      console.error('Error full retrieving recipes by id recipe: '+id, err);
+      console.error('Error full retrieving recipes by id recipe: ' + id, err);
       callback(err, null);
     }
   }
