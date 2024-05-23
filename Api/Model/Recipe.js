@@ -144,7 +144,9 @@ const db = new sqlite3.Database('DB_Notebook.db');
                     entry.ingredients.add(JSON.stringify({
                         id: row.Id_Ingredient,
                         ingredient: row.Ingredient_recipe,
-                        poidIngredient: row.PoidIngredient
+                        poidIngredient: row.PoidIngredient,
+                        unite: row.Unite,
+                        recipeId: row.FRK_recipe
                     }));
                     entry.reviews.add(JSON.stringify({
                         id: row.Id_Review_recipe,
@@ -440,7 +442,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
           rows[0].Frk_user
         );
 
-        const detailRecipe = new DetailRecipeModel(
+        const detail_recipe = new DetailRecipeModel(
           rows[0].Id_detail_recipe,
           rows[0].Dt_recipe,
           rows[0].Dt_recipe_time,
@@ -488,7 +490,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
         const steps = Array.from(stepSet).map(JSON.parse);
 
         // Pass all the data to the callback
-        callback(null, { recipe, user, detailRecipe, ingredients, reviews, steps });
+        callback(null, { recipe, user, detail_recipe, ingredients, reviews, steps });
       });
       db.close();
     } catch (err) {
