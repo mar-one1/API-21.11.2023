@@ -193,7 +193,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
       db.run('BEGIN TRANSACTION');
 
       try {
-        const { recipe, detailRecipe, ingredients, reviews, steps } = recipeData;
+        const { recipe, detail_recipe, ingredients, reviews, steps } = recipeData;
 
         db.run(
           `INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe, Frk_user) VALUES (?, ?, ?, ?)`,
@@ -209,7 +209,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
 
             db.run(
               `INSERT INTO Detail_recipe (Dt_recipe, Dt_recipe_time, Rate_recipe, Level_recipe, Calories_recipe, FRK_recipe) VALUES (?, ?, ?, ?, ?, ?)`,
-              [detailRecipe.detail, detailRecipe.time, detailRecipe.rate, detailRecipe.level, detailRecipe.calories, recipeId],
+              [detail_recipe.detail, detail_recipe.time, detail_recipe.rate, detail_recipe.level, detail_recipe.calories, recipeId],
               function (err) {
                 if (err) {
                   db.run('ROLLBACK');
