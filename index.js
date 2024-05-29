@@ -24,6 +24,7 @@ const reviewRecipeRouter = require('./Api/Router/review_recipeRouter');
 const produitRouter = require('./Api/Router/produit_Router');
 const favRouter = require('./Api/Router/fav_user_recipe_Router');
 const recipeModelRouter = require('./Api/Repo/recipeModelRouter');
+const categoryModelRouter = require('./Api/Router/category_Router');
 
 
 
@@ -35,6 +36,9 @@ app.use(
     extended: true,
   })
 );
+
+// Middleware to parse JSON request bodies
+app.use(bodyParser.json());
 
 // Initialize Swagger documentation
 swaggerSetup(app);
@@ -52,6 +56,7 @@ app.use('/reviewrecipes', reviewRecipeRouter);
 app.use('/produits',produitRouter);
 app.use('/favorites',favRouter);
 app.use('/api', recipeModelRouter);
+app.use('/category', categoryModelRouter);
 // Serve Swagger UI
 
 
