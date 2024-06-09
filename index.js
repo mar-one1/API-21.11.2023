@@ -11,6 +11,7 @@ const swaggerSetup = require('./Api/swagger');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./Api/swagger');
 
+const { deleteUnusedImages } = require('./Api/Router/ImageHelper');
 const authRouter = require('./Api/Router/auth_Router');
 // Import the verifyToken middleware
 const verifyToken = require('./Api/Middleware/verifyToken'); // Adjust the path as needed
@@ -26,7 +27,14 @@ const favRouter = require('./Api/Router/fav_user_recipe_Router');
 const recipeModelRouter = require('./Api/Repo/recipeModelRouter');
 const categoryModelRouter = require('./Api/Router/category_Router');
 
-
+app.delete('/cleanup-images', async (req, res) => {
+  try {
+      const result = await deleteUnusedImages();
+      res.status(200).json(result);
+  } catch (err) {
+      res.status(500).json({ message: err.message });
+  }
+});
 
 
 // ...

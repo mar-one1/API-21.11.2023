@@ -4,6 +4,7 @@ const DetailRecipeModel = require('./Detail_recipe'); // Import the User model
 const IngredientModel = require('./Ingredient'); // Import the User model
 const ReviewModel = require('./Review_recipe'); // Import the User model
 const StepModel = require('./Step_recipe'); // Import the User model
+const imageHelper = require('../Router/ImageHelper'); // Import the User model
 const fs = require('fs');
 class Recipe {
   constructor(id, name, icon, fav, userId) {
@@ -42,6 +43,32 @@ class Recipe {
       callback(err, null);
     }
   }
+
+  // Helper function to get all image paths from the database
+  static getAllImagePathsFromDatabase(callback) {
+    if (typeof callback !== 'function') {
+        throw new Error('Callback function is required');
+    }
+
+    const db = new sqlite3.Database('DB_Notebook.db');
+    try {
+        db.all('SELECT Icon_recipe FROM Recipe', [], (err, rows) => {
+            if (err) {
+                db.close();
+                console.error('Error getting all image paths from database:', err);
+                return callback(err, null);
+            }
+            const paths = rows.map(row => row.path);
+            db.close();
+            callback(null, paths);
+        });
+    } catch (err) {
+        db.close();
+        console.error('Error getting all image paths from database:', err);
+        callback(err, null);
+    }
+}
+
 
   /*static getRecipeById(id, callback) {
 const db = new sqlite3.Database('DB_Notebook.db');
