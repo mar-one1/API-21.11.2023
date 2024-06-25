@@ -207,13 +207,14 @@ class User {
     // Helper function to get all image paths from the database
     static getAllImagePathsFromDatabase(callback) {
       const db = new sqlite3.Database('DB_Notebook.db');
-      db.all('SELECT Icon_user FROM User', [], (err, rows) => {
+      db.all('SELECT Url_image FROM User', [], (err, rows) => {
           if (err) {
               db.close();
               console.error('Error getting all image paths from database:', err);
               return callback(err, null);
           }
-          const paths = rows.map(row => row.path);
+          const paths = rows.map(row => row.Url_image);
+          console.log("path geting form db :"+paths)
           db.close();
           callback(null, paths);
       });

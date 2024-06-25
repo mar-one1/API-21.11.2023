@@ -58,7 +58,8 @@ class Recipe {
                 console.error('Error getting all image paths from database:', err);
                 return callback(err, null);
             }
-            const paths = rows.map(row => row.path);
+            const paths = rows.map(row => row.Icon_recipe);
+            console.log("path geting form db :"+paths)
             db.close();
             callback(null, paths);
         });
