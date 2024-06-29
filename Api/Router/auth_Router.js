@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 const express = require('express');
 //const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
