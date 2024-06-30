@@ -1,37 +1,45 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const IngredientRecipe = require('../Model/Ingredient'); // Import the IngredientRecipe model
+const IngredientRecipe = require("../Model/Ingredient"); // Import the IngredientRecipe model
 
 // Create an ingredient recipe
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
   const { ingredient, poidIngredient, recipeId } = req.body;
 
   // Validate request data here if needed
 
-  IngredientRecipe.createIngredientRecipe(ingredient, poidIngredient, recipeId, (err, newIngredientRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+  IngredientRecipe.createIngredientRecipe(
+    ingredient,
+    poidIngredient,
+    recipeId,
+    (err, newIngredientRecipe) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(newIngredientRecipe);
     }
-    res.json(newIngredientRecipe);
-  });
+  );
 });
 
 // Get an ingredient recipe by ID
-router.get('/:id', (req, res) => {
+router.get("/:id", (req, res) => {
   const ingredientRecipeId = req.params.id;
-  IngredientRecipe.getIngredientRecipeById(ingredientRecipeId, (err, ingredientRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+  IngredientRecipe.getIngredientRecipeById(
+    ingredientRecipeId,
+    (err, ingredientRecipe) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (!ingredientRecipe) {
+        return res.status(406).json({ error: "Ingredient recipe not found" });
+      }
+      res.json(ingredientRecipe);
     }
-    if (!ingredientRecipe) {
-      return res.status(406).json({ error: 'Ingredient recipe not found' });
-    }
-    res.json(ingredientRecipe);
-  });
+  );
 });
 
 // Get all ingredient recipes
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   IngredientRecipe.getAllIngredientRecipes((err, ingredientRecipes) => {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -41,14 +49,16 @@ router.get('/', (req, res) => {
 });
 
 // Get ingredients by recipe ID
-router.get('/recipe/:id', (req, res) => {
+router.get("/recipe/:id", (req, res) => {
   const recipeId = req.params.id;
   IngredientRecipe.getIngredientsByRecipeId(recipeId, (err, ingredients) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
     if (!ingredients || ingredients.length === 0) {
-      return res.status(406).json({ error: 'Ingredients not found for this recipe' });
+      return res
+        .status(406)
+        .json({ error: "Ingredients not found for this recipe" });
     }
     res.json(ingredients);
   });
@@ -57,229 +67,46 @@ router.get('/recipe/:id', (req, res) => {
 // Add more routes for updating, deleting, or other operations as needed
 
 // Update an ingredient recipe by ID
-router.put('/:id', (req, res) => {
-    const ingredientId = req.params.id;
-    const { ingredient, poidIngredient, recipeId } = req.body;
-  
-    // Validate request data here if needed
-  
-    IngredientRecipe.updateIngredientRecipe(ingredientId, ingredient, poidIngredient, recipeId, (err, updatedIngredientRecipe) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (!updatedIngredientRecipe) {
-        return res.status(406).json({ error: 'Ingredient recipe not found or not updated' });
-      }
-      res.json(updatedIngredientRecipe);
-    });
-  });
-  
-  // Delete an ingredient recipe by ID
-  router.delete('/:id', (req, res) => {
-    const ingredientId = req.params.id;
-  
-    IngredientRecipe.deleteIngredientRecipe(ingredientId, (err, deleted) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (!deleted) {
-        return res.status(406).json({ error: 'Ingredient recipe not found or not deleted' });
-      }
-      res.json({ message: 'Ingredient recipe deleted successfully' });
-    });
-  });
-
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-const express = require('express');
-const router = express.Router();
-const IngredientRecipe = require('../Model/Ingredient_recipe'); // Import the IngredientRecipe model
-
-// Create an ingredient recipe
-router.post('/', (req, res) => {
+router.put("/:id", (req, res) => {
+  const ingredientId = req.params.id;
   const { ingredient, poidIngredient, recipeId } = req.body;
 
   // Validate request data here if needed
 
-  IngredientRecipe.createIngredientRecipe(ingredient, poidIngredient, recipeId, (err, newIngredientRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(newIngredientRecipe);
-  });
-});
-
-// Get an ingredient recipe by ID
-router.get('/:id', (req, res) => {
-  const ingredientRecipeId = req.params.id;
-  IngredientRecipe.getIngredientRecipeById(ingredientRecipeId, (err, ingredientRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!ingredientRecipe) {
-      return res.status(404).json({ error: 'Ingredient recipe not found' });
-    }
-    res.json(ingredientRecipe);
-  });
-});
-
-// Get all ingredient recipes
-router.get('/', (req, res) => {
-  IngredientRecipe.getAllIngredientRecipes((err, ingredientRecipes) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(ingredientRecipes);
-  });
-});
-
-// Get ingredients by recipe ID
-router.get('/recipe/:id', (req, res) => {
-  const recipeId = req.params.id;
-  IngredientRecipe.getIngredientsByRecipeId(recipeId, (err, ingredients) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!ingredients || ingredients.length === 0) {
-      return res.status(404).json({ error: 'Ingredients not found for this recipe' });
-    }
-    res.json(ingredients);
-  });
-});
-
-// Add more routes for updating, deleting, or other operations as needed
-
-// Update an ingredient recipe by ID
-router.put('/:id', (req, res) => {
-    const ingredientId = req.params.id;
-    const { ingredient, poidIngredient, recipeId } = req.body;
-  
-    // Validate request data here if needed
-  
-    IngredientRecipe.updateIngredientRecipe(ingredientId, ingredient, poidIngredient, recipeId, (err, updatedIngredientRecipe) => {
+  IngredientRecipe.updateIngredientRecipe(
+    ingredientId,
+    ingredient,
+    poidIngredient,
+    recipeId,
+    (err, updatedIngredientRecipe) => {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
       if (!updatedIngredientRecipe) {
-        return res.status(404).json({ error: 'Ingredient recipe not found or not updated' });
+        return res
+          .status(406)
+          .json({ error: "Ingredient recipe not found or not updated" });
       }
       res.json(updatedIngredientRecipe);
-    });
-  });
-  
-  // Delete an ingredient recipe by ID
-  router.delete('/:id', (req, res) => {
-    const ingredientId = req.params.id;
-  
-    IngredientRecipe.deleteIngredientRecipe(ingredientId, (err, deleted) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (!deleted) {
-        return res.status(404).json({ error: 'Ingredient recipe not found or not deleted' });
-      }
-      res.json({ message: 'Ingredient recipe deleted successfully' });
-    });
-  });
+    }
+  );
+});
 
+// Delete an ingredient recipe by ID
+router.delete("/:id", (req, res) => {
+  const ingredientId = req.params.id;
 
-=======
-const express = require('express');
-const router = express.Router();
-const IngredientRecipe = require('../Model/Ingredient_recipe'); // Import the IngredientRecipe model
-
-// Create an ingredient recipe
-router.post('/', (req, res) => {
-  const { ingredient, poidIngredient, recipeId } = req.body;
-
-  // Validate request data here if needed
-
-  IngredientRecipe.createIngredientRecipe(ingredient, poidIngredient, recipeId, (err, newIngredientRecipe) => {
+  IngredientRecipe.deleteIngredientRecipe(ingredientId, (err, deleted) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json(newIngredientRecipe);
+    if (!deleted) {
+      return res
+        .status(406)
+        .json({ error: "Ingredient recipe not found or not deleted" });
+    }
+    res.json({ message: "Ingredient recipe deleted successfully" });
   });
 });
 
-// Get an ingredient recipe by ID
-router.get('/:id', (req, res) => {
-  const ingredientRecipeId = req.params.id;
-  IngredientRecipe.getIngredientRecipeById(ingredientRecipeId, (err, ingredientRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!ingredientRecipe) {
-      return res.status(404).json({ error: 'Ingredient recipe not found' });
-    }
-    res.json(ingredientRecipe);
-  });
-});
-
-// Get all ingredient recipes
-router.get('/', (req, res) => {
-  IngredientRecipe.getAllIngredientRecipes((err, ingredientRecipes) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(ingredientRecipes);
-  });
-});
-
-// Get ingredients by recipe ID
-router.get('/recipe/:id', (req, res) => {
-  const recipeId = req.params.id;
-  IngredientRecipe.getIngredientsByRecipeId(recipeId, (err, ingredients) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!ingredients || ingredients.length === 0) {
-      return res.status(404).json({ error: 'Ingredients not found for this recipe' });
-    }
-    res.json(ingredients);
-  });
-});
-
-// Add more routes for updating, deleting, or other operations as needed
-
-// Update an ingredient recipe by ID
-router.put('/:id', (req, res) => {
-    const ingredientId = req.params.id;
-    const { ingredient, poidIngredient, recipeId } = req.body;
-  
-    // Validate request data here if needed
-  
-    IngredientRecipe.updateIngredientRecipe(ingredientId, ingredient, poidIngredient, recipeId, (err, updatedIngredientRecipe) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (!updatedIngredientRecipe) {
-        return res.status(404).json({ error: 'Ingredient recipe not found or not updated' });
-      }
-      res.json(updatedIngredientRecipe);
-    });
-  });
-  
-  // Delete an ingredient recipe by ID
-  router.delete('/:id', (req, res) => {
-    const ingredientId = req.params.id;
-  
-    IngredientRecipe.deleteIngredientRecipe(ingredientId, (err, deleted) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (!deleted) {
-        return res.status(404).json({ error: 'Ingredient recipe not found or not deleted' });
-      }
-      res.json({ message: 'Ingredient recipe deleted successfully' });
-    });
-  });
-
-
->>>>>>> 02fdd61cf476b0b5f53b3365ca5a5cf563464136
->>>>>>> Stashed changes:Api/Router/ingredient_recipeRouter.js
-=======
->>>>>>> parent of e60d7f8 (init commit 2)
 module.exports = router;

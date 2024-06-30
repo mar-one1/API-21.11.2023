@@ -1,23 +1,29 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const StepRecipe = require('../Model/Step_recipe'); // Import the StepRecipe model
+const StepRecipe = require("../Model/Step_recipe"); // Import the StepRecipe model
 
 // Create a step recipe
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
   const { detailStep, imageStep, timeStep, recipeId } = req.body;
 
   // Validate request data here if needed
 
-  StepRecipe.createStepRecipe(detailStep, imageStep, timeStep, recipeId, (err, newStepRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+  StepRecipe.createStepRecipe(
+    detailStep,
+    imageStep,
+    timeStep,
+    recipeId,
+    (err, newStepRecipe) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(newStepRecipe);
     }
-    res.json(newStepRecipe);
-  });
+  );
 });
 
 // Get All steps
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   StepRecipe.getAllStepRecipes((err, stepRecipes) => {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -26,16 +32,15 @@ router.get('/', (req, res) => {
   });
 });
 
-
 // Get steps by recipe ID
-router.get('/recipe/:id', (req, res) => {
+router.get("/recipe/:id", (req, res) => {
   const recipeId = req.params.id;
   StepRecipe.getStepsByRecipeId(recipeId, (err, steps) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
     if (!steps || steps.length === 0) {
-      return res.status(406).json({ error: 'Steps not found for this recipe' });
+      return res.status(406).json({ error: "Steps not found for this recipe" });
     }
     res.json(steps);
   });
@@ -44,25 +49,34 @@ router.get('/recipe/:id', (req, res) => {
 // Add more routes for updating, deleting, or other operations as needed
 
 // Update a step recipe by ID
-router.put('/:id', (req, res) => {
+router.put("/:id", (req, res) => {
   const stepId = req.params.id;
   const { detailStep, imageStep, timeStep, recipeId } = req.body;
 
   // Validate request data here if needed
 
-  StepRecipe.updateStepRecipe(stepId, detailStep, imageStep, timeStep, recipeId, (err, updatedStepRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+  StepRecipe.updateStepRecipe(
+    stepId,
+    detailStep,
+    imageStep,
+    timeStep,
+    recipeId,
+    (err, updatedStepRecipe) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (!updatedStepRecipe) {
+        return res
+          .status(406)
+          .json({ error: "Step recipe not found or not updated" });
+      }
+      res.json(updatedStepRecipe);
     }
-    if (!updatedStepRecipe) {
-      return res.status(406).json({ error: 'Step recipe not found or not updated' });
-    }
-    res.json(updatedStepRecipe);
-  });
+  );
 });
 
 // Delete a step recipe by ID
-router.delete('/:id', (req, res) => {
+router.delete("/:id", (req, res) => {
   const stepId = req.params.id;
 
   StepRecipe.deleteStepRecipe(stepId, (err, deleted) => {
@@ -70,179 +84,12 @@ router.delete('/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!deleted) {
-      return res.status(406).json({ error: 'Step recipe not found or not deleted' });
+      return res
+        .status(406)
+        .json({ error: "Step recipe not found or not deleted" });
     }
-    res.json({ message: 'Step recipe deleted successfully' });
+    res.json({ message: "Step recipe deleted successfully" });
   });
 });
-
 
 module.exports = router;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-const express = require('express');
-const router = express.Router();
-const StepRecipe = require('../Model/Step_recipe'); // Import the StepRecipe model
-
-// Create a step recipe
-router.post('/', (req, res) => {
-  const { detailStep, imageStep, timeStep, recipeId } = req.body;
-
-  // Validate request data here if needed
-
-  StepRecipe.createStepRecipe(detailStep, imageStep, timeStep, recipeId, (err, newStepRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(newStepRecipe);
-  });
-});
-
-// Get All steps
-router.get('/', (req, res) => {
-  StepRecipe.getAllStepRecipes((err, stepRecipes) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(stepRecipes);
-  });
-});
-
-
-// Get steps by recipe ID
-router.get('/recipe/:id', (req, res) => {
-  const recipeId = req.params.id;
-  StepRecipe.getStepsByRecipeId(recipeId, (err, steps) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!steps || steps.length === 0) {
-      return res.status(404).json({ error: 'Steps not found for this recipe' });
-    }
-    res.json(steps);
-  });
-});
-
-// Add more routes for updating, deleting, or other operations as needed
-
-// Update a step recipe by ID
-router.put('/:id', (req, res) => {
-  const stepId = req.params.id;
-  const { detailStep, imageStep, timeStep, recipeId } = req.body;
-
-  // Validate request data here if needed
-
-  StepRecipe.updateStepRecipe(stepId, detailStep, imageStep, timeStep, recipeId, (err, updatedStepRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!updatedStepRecipe) {
-      return res.status(404).json({ error: 'Step recipe not found or not updated' });
-    }
-    res.json(updatedStepRecipe);
-  });
-});
-
-// Delete a step recipe by ID
-router.delete('/:id', (req, res) => {
-  const stepId = req.params.id;
-
-  StepRecipe.deleteStepRecipe(stepId, (err, deleted) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!deleted) {
-      return res.status(404).json({ error: 'Step recipe not found or not deleted' });
-    }
-    res.json({ message: 'Step recipe deleted successfully' });
-  });
-});
-
-
-module.exports = router;
-=======
-const express = require('express');
-const router = express.Router();
-const StepRecipe = require('../Model/Step_recipe'); // Import the StepRecipe model
-
-// Create a step recipe
-router.post('/', (req, res) => {
-  const { detailStep, imageStep, timeStep, recipeId } = req.body;
-
-  // Validate request data here if needed
-
-  StepRecipe.createStepRecipe(detailStep, imageStep, timeStep, recipeId, (err, newStepRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(newStepRecipe);
-  });
-});
-
-// Get All steps
-router.get('/', (req, res) => {
-  StepRecipe.getAllStepRecipes((err, stepRecipes) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(stepRecipes);
-  });
-});
-
-
-// Get steps by recipe ID
-router.get('/recipe/:id', (req, res) => {
-  const recipeId = req.params.id;
-  StepRecipe.getStepsByRecipeId(recipeId, (err, steps) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!steps || steps.length === 0) {
-      return res.status(404).json({ error: 'Steps not found for this recipe' });
-    }
-    res.json(steps);
-  });
-});
-
-// Add more routes for updating, deleting, or other operations as needed
-
-// Update a step recipe by ID
-router.put('/:id', (req, res) => {
-  const stepId = req.params.id;
-  const { detailStep, imageStep, timeStep, recipeId } = req.body;
-
-  // Validate request data here if needed
-
-  StepRecipe.updateStepRecipe(stepId, detailStep, imageStep, timeStep, recipeId, (err, updatedStepRecipe) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!updatedStepRecipe) {
-      return res.status(404).json({ error: 'Step recipe not found or not updated' });
-    }
-    res.json(updatedStepRecipe);
-  });
-});
-
-// Delete a step recipe by ID
-router.delete('/:id', (req, res) => {
-  const stepId = req.params.id;
-
-  StepRecipe.deleteStepRecipe(stepId, (err, deleted) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (!deleted) {
-      return res.status(404).json({ error: 'Step recipe not found or not deleted' });
-    }
-    res.json({ message: 'Step recipe deleted successfully' });
-  });
-});
-
-
-module.exports = router;
->>>>>>> 02fdd61cf476b0b5f53b3365ca5a5cf563464136
->>>>>>> Stashed changes
-=======
->>>>>>> parent of e60d7f8 (init commit 2)
