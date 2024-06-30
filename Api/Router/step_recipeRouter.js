@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 const express = require('express');
 const router = express.Router();
 const StepRecipe = require('../Model/Step_recipe'); // Import the StepRecipe model
@@ -79,6 +78,7 @@ router.delete('/:id', (req, res) => {
 
 
 module.exports = router;
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 const express = require('express');
@@ -244,3 +244,5 @@ router.delete('/:id', (req, res) => {
 module.exports = router;
 >>>>>>> 02fdd61cf476b0b5f53b3365ca5a5cf563464136
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of e60d7f8 (init commit 2)

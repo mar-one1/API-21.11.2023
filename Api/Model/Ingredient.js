@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream:Api/Model/Ingredient.js
 const sqlite3 = require('sqlite3').verbose();
 
 
@@ -158,6 +157,7 @@ class IngredientRecipe {
 
 }
 
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 const sqlite3 = require('sqlite3').verbose();
@@ -469,4 +469,6 @@ class IngredientRecipe {
 
 >>>>>>> 02fdd61cf476b0b5f53b3365ca5a5cf563464136
 >>>>>>> Stashed changes:Api/Model/Ingredient_recipe.js
+=======
+>>>>>>> parent of e60d7f8 (init commit 2)
 module.exports = IngredientRecipe;

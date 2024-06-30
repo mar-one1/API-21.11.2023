@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -547,6 +546,7 @@ class User {
 }
 
 module.exports = User;
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 const sqlite3 = require('sqlite3').verbose();
@@ -1189,3 +1189,5 @@ class User
 >>>>>>> 02fdd61cf476b0b5f53b3365ca5a5cf563464136
   
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of e60d7f8 (init commit 2)

@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 -- SQLite
 -- Create the User table
 /*CREATE TABLE User (
@@ -82,6 +81,7 @@ CREATE TABLE FavoriteUserRecipe (
     FOREIGN KEY (FRK_user) REFERENCES User(Id_user),
     FOREIGN KEY (FRK_recipe) REFERENCES Recipe(Id_recipe)
 );
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 -- SQLite
@@ -227,3 +227,5 @@ CREATE TABLE Produit (
 );
 >>>>>>> 02fdd61cf476b0b5f53b3365ca5a5cf563464136
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of e60d7f8 (init commit 2)

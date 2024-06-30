@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 const sqlite3 = require('sqlite3').verbose();
 const UserModel = require('./User'); // Import the User model
 const DetailRecipeModel = require('./Detail_recipe'); // Import the User model
@@ -770,6 +769,7 @@ const db = new sqlite3.Database('DB_Notebook.db');
 }
 
 module.exports = Recipe;
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 const sqlite3 = require('sqlite3').verbose();
@@ -1107,3 +1107,5 @@ static searchRecipes(Nom_Recipe, callback) {
 module.exports = Recipe;
 >>>>>>> 02fdd61cf476b0b5f53b3365ca5a5cf563464136
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of e60d7f8 (init commit 2)

@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 const express = require('express');
 const router = express.Router();
 const Produit = require('../Model/Produit');
@@ -75,6 +74,7 @@ router.get('/', (req, res) => {
   res.send('Hello from the router Produit!');
 });
 
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 const express = require('express');
@@ -232,4 +232,6 @@ router.get('/', (req, res) => {
 
 >>>>>>> 02fdd61cf476b0b5f53b3365ca5a5cf563464136
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of e60d7f8 (init commit 2)
 module.exports = router;

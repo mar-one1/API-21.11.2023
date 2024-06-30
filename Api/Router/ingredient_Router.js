@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream:Api/Router/ingredient_Router.js
 const express = require('express');
 const router = express.Router();
 const IngredientRecipe = require('../Model/Ingredient'); // Import the IngredientRecipe model
@@ -91,6 +90,7 @@ router.put('/:id', (req, res) => {
   });
 
 
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 const express = require('express');
@@ -280,4 +280,6 @@ router.put('/:id', (req, res) => {
 
 >>>>>>> 02fdd61cf476b0b5f53b3365ca5a5cf563464136
 >>>>>>> Stashed changes:Api/Router/ingredient_recipeRouter.js
+=======
+>>>>>>> parent of e60d7f8 (init commit 2)
 module.exports = router;
