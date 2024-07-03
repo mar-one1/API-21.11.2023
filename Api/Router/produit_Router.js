@@ -1,12 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Produit = require('../Model/Produit');
-const bodyParser = require('body-parser');
+const Produit = require("../Model/Produit");
+const bodyParser = require("body-parser");
 
 router.use(bodyParser.json());
 
 // Create a new "Produit"
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   const { name, weight } = req.body;
   Produit.createProduit(name, weight, (err, newProduit) => {
     if (err) {
@@ -17,21 +17,21 @@ router.post('/', async (req, res) => {
 });
 
 // Get a "Produit" by ID
-router.get('/:id', (req, res) => {
+router.get("/:id", (req, res) => {
   const produitId = req.params.id;
   Produit.getProduitById(produitId, (err, produit) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
     if (!produit) {
-      return res.status(404).json({ error: 'Produit not found' });
+      return res.status(406).json({ error: "Produit not found" });
     }
     res.json(produit);
   });
 });
 
 // Get All "Produits"
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   Produit.getAllProduits((err, produits) => {
     if (err) {
       return res.status(500).json({ error: err.message });
@@ -41,7 +41,7 @@ router.get('/', (req, res) => {
 });
 
 // Update a "Produit" by ID
-router.put('/:id', (req, res) => {
+router.put("/:id", (req, res) => {
   const produitId = req.params.id;
   const { name, weight } = req.body;
   Produit.updateProduit(produitId, name, weight, (err, updatedProduit) => {
@@ -49,29 +49,33 @@ router.put('/:id', (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     if (!updatedProduit) {
-      return res.status(404).json({ error: 'Produit not found or not updated' });
+      return res
+        .status(406)
+        .json({ error: "Produit not found or not updated" });
     }
     res.json(updatedProduit);
   });
 });
 
 // Delete a "Produit" by ID
-router.delete('/:id', (req, res) => {
+router.delete("/:id", (req, res) => {
   const produitId = req.params.id;
   Produit.deleteProduit(produitId, (err, deleted) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
     if (!deleted) {
-      return res.status(404).json({ error: 'Produit not found or not deleted' });
+      return res
+        .status(406)
+        .json({ error: "Produit not found or not deleted" });
     }
-    res.json({ message: 'Produit deleted successfully' });
+    res.json({ message: "Produit deleted successfully" });
   });
 });
 
 // Define a route for the root URL
-router.get('/', (req, res) => {
-  res.send('Hello from the router Produit!');
+router.get("/", (req, res) => {
+  res.send("Hello from the router Produit!");
 });
 
 module.exports = router;
