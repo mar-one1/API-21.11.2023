@@ -15,9 +15,11 @@ router.post('/', (req, res) => {
     console.log(FRK_user+" "+FRK_recipe);
     Favorite.create(FRK_user, FRK_recipe, (err, favorite) => {
         if (err) {
+            console.log(err);
             return res.status(500).json({ error: 'Failed to create favorite' });
         }
         res.status(201).json(favorite);
+        console.log('result :'+favorite);
     });
 });
 
