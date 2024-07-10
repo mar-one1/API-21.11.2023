@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const IngredientRecipe = require("../Model/Ingredients_recipe"); // Import the IngredientRecipe model
+const IngredientRecipe = require("../Model/Ingredient"); // Import the IngredientRecipe model
 
 // Create an ingredient recipe
 router.post("/", (req, res) => {

@@ -166,3 +166,4 @@ class IngredientRecipe {
     db.close();
   }
 }
+module.exports = IngredientRecipe;
