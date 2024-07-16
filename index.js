@@ -1,15 +1,13 @@
 const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
+const http = require('http');
+const socketIo = require('socket.io');
 const db = new sqlite3.Database('DB_Notebook.db'); //database file name
 const port = process.env.PORT || 3000;
-const multer = require('multer');
-const path = require('path');
 app.use(express.static('public'));
-const mongoose = require('mongoose');
 const swaggerSetup = require('./Api/swagger');
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./Api/swagger');
+
 
 const { deleteUnusedImages } = require('./Api/Router/ImageHelper');
 const authRouter = require('./Api/Router/auth_Router');
@@ -26,6 +24,10 @@ const produitRouter = require('./Api/Router/produit_Router');
 const favRouter = require('./Api/Router/fav_user_recipe_Router');
 const recipeModelRouter = require('./Api/Repo/recipeModelRouter');
 const categoryModelRouter = require('./Api/Router/category_Router');
+const chatRoutes = require('./routes/chat');
+
+const server = http.createServer(app);
+const io = socketIo(server);
 
 app.delete('/cleanup-images', async (req, res) => {
   try {
@@ -65,9 +67,41 @@ app.use('/produits',produitRouter);
 app.use('/favorites',favRouter);
 app.use('/api', recipeModelRouter);
 app.use('/category', categoryModelRouter);
+app.use('/api/chat', chatRoutes);
+
 // Serve Swagger UI
 
+// Handle connection event
+io.on('connection', (socket) => {
+    console.log('A user connected');
 
+    // Load existing messages
+    messageModel.getAllMessages((err, messages) => {
+        if (err) {
+            console.error('Error fetching messages', err);
+        } else {
+            socket.emit('load messages', messages);
+        }
+    });
+
+    // Handle chat message event
+    socket.on('chat message', (msg) => {
+        // Save message to database
+        messageModel.saveMessage(msg, (err, message) => {
+            if (err) {
+                console.error('Error saving message', err);
+            } else {
+                // Broadcast the message to all connected clients
+                io.emit('chat message', message);
+            }
+        });
+    });
+
+    // Handle disconnect event
+    socket.on('disconnect', () => {
+        console.log('A user disconnected');
+    });
+});
 
 
 
