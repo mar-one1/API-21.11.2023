@@ -24,7 +24,7 @@ const produitRouter = require('./Api/Router/produit_Router');
 const favRouter = require('./Api/Router/fav_user_recipe_Router');
 const recipeModelRouter = require('./Api/Repo/recipeModelRouter');
 const categoryModelRouter = require('./Api/Router/category_Router');
-const chatRoutes = require('./routes/chat');
+const chatRoutes = require('./Api/Router/chat_Router');
 
 const server = http.createServer(app);
 const io = socketIo(server);

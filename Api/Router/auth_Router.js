@@ -1,7 +1,7 @@
 const express = require("express");
 //const { body, validationResult } = require('express-validator');
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcryptjs');
 const sqlite3 = require("sqlite3").verbose();
 const bodyParser = require("body-parser");
 const user = require("../Model/User");

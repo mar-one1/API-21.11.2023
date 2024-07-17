@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const messageModel = require('../models/message');
+const messageModel = require('../Model/chat');
 
 // Endpoint to get all messages
 router.get('/messages', (req, res) => {
