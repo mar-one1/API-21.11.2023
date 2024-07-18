@@ -8,8 +8,11 @@ const port = process.env.PORT || 3000;
 app.use(express.static('public'));
 const swaggerSetup = require('./Api/swagger');
 
+const server = http.createServer(app);
+const io = socketIo(server);
 
 const { deleteUnusedImages } = require('./Api/Router/ImageHelper');
+const chatRoutes = require('./Api/Router/chat_Router');
 const authRouter = require('./Api/Router/auth_Router');
 // Import the verifyToken middleware
 const verifyToken = require('./Api/Middleware/verifyToken'); // Adjust the path as needed
@@ -24,17 +27,15 @@ const produitRouter = require('./Api/Router/produit_Router');
 const favRouter = require('./Api/Router/fav_user_recipe_Router');
 const recipeModelRouter = require('./Api/Repo/recipeModelRouter');
 const categoryModelRouter = require('./Api/Router/category_Router');
-const chatRoutes = require('./Api/Router/chat_Router');
 
-const server = http.createServer(app);
-const io = socketIo(server);
+
 
 app.delete('/cleanup-images', async (req, res) => {
   try {
-      const result = await deleteUnusedImages();
-      res.status(200).json(result);
+    const result = await deleteUnusedImages();
+    res.status(200).json(result);
   } catch (err) {
-      res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -55,6 +56,7 @@ swaggerSetup(app);
 
 
 app.use('/users', usersRouter);
+app.use('/api/chat', chatRoutes);
 app.use('/auth', authRouter);
 // Apply the middleware to all routes
 app.use(verifyToken);
@@ -63,46 +65,42 @@ app.use('/detailrecipes', detailRecipeRouter);
 app.use('/ingredientrecipes', ingredientRecipeRouter);
 app.use('/steprecipes', stepRecipeRouter);
 app.use('/reviewrecipes', reviewRecipeRouter);
-app.use('/produits',produitRouter);
-app.use('/favorites',favRouter);
+app.use('/produits', produitRouter);
+app.use('/favorites', favRouter);
 app.use('/api', recipeModelRouter);
 app.use('/category', categoryModelRouter);
-app.use('/api/chat', chatRoutes);
 
 // Serve Swagger UI
 
-// Handle connection event
+// WebSocket connection handling
 io.on('connection', (socket) => {
-    console.log('A user connected');
+  console.log('A user connected');
 
-    // Load existing messages
-    messageModel.getAllMessages((err, messages) => {
-        if (err) {
-            console.error('Error fetching messages', err);
-        } else {
-            socket.emit('load messages', messages);
-        }
-    });
+  // Handle chat message event
+  socket.on('chat message', (data) => {
+      // Handle chat message (save to database, etc.)
+      console.log('Received message:', data);
 
-    // Handle chat message event
-    socket.on('chat message', (msg) => {
-        // Save message to database
-        messageModel.saveMessage(msg, (err, message) => {
-            if (err) {
-                console.error('Error saving message', err);
-            } else {
-                // Broadcast the message to all connected clients
-                io.emit('chat message', message);
-            }
-        });
-    });
+      // Example: Save message to database
+      messageModel.saveMessage(data, (err, savedMessage) => {
+          if (err) {
+              console.error('Error saving message', err);
+          } else {
+              // Emit message to the receiver
+              io.to(data.receiverId).emit('chat message', {
+                  senderId: data.senderId,
+                  message: data.message,
+                  timestamp: savedMessage.timestamp // Assuming savedMessage has timestamp
+              });
+          }
+      });
+  });
 
-    // Handle disconnect event
-    socket.on('disconnect', () => {
-        console.log('A user disconnected');
-    });
+  // Handle disconnect event
+  socket.on('disconnect', () => {
+      console.log('A user disconnected');
+  });
 });
-
 
 
 db.serialize(() => {
@@ -113,7 +111,7 @@ db.serialize(() => {
       console.error('Error connecting to the database:', err.message);
     } else {
       console.log('Connected to the database.');
-      
+
       // You can perform your database operations here
     }
   });
@@ -122,25 +120,25 @@ db.serialize(() => {
 // Connect to your MongoDB database
 //mongoose.connect('mongodb://127.0.0.1:27017/db_note', { useNewUrlParser: true, useUnifiedTopology: true });
 
-  // Example: Protect a route using the verifyToken middleware
-  app.get('/protected', verifyToken, (req, res) => {
-    // Check if token was refreshed
+// Example: Protect a route using the verifyToken middleware
+app.get('/protected', verifyToken, (req, res) => {
+  // Check if token was refreshed
   if (req.tokenRefreshed) {
     // If token was refreshed, respond with the new token
-    res.status(201).json({ message: 'This route is protected token was refreshed', user: req.user, token: req.newAccessToken});
+    res.status(201).json({ message: 'This route is protected token was refreshed', user: req.user, token: req.newAccessToken });
   } else {
     // If token was valid, proceed with the endpoint logic
     // Your endpoint logic here...
-    res.status(200).json({ message: 'This route is protected', user: req.user, token: req.newAccessToken});
+    res.status(200).json({ message: 'This route is protected', user: req.user, token: req.newAccessToken });
   }
-    
-  });
+
+});
 
 
 // Serving static files from the 'public' directory
 
 
- 
+
 // const server = http.createServer((req, res) => {
 //   res.statusCode = 200;
 //   res.setHeader('Content-Type', 'text/plain');

@@ -1,28 +1,59 @@
 const sqlite3 = require('sqlite3').verbose();
 
+// Connect to the SQLite database
 const db = new sqlite3.Database('./DB_Notebook.db', (err) => {
     if (err) {
         console.error('Could not connect to database', err);
     } else {
         console.log('Connected to SQLite database');
+        
+        // Create messages table if it doesn't exist
         db.run(`CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            recipeId INTEGER,
+            senderId INTEGER,
+            receiverId INTEGER,
             message TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )`);
+        )`, (err) => {
+            if (err) {
+                console.error('Error creating messages table', err);
+            } else {
+                console.log('Messages table created or already exists');
+            }
+        });
     }
 });
 
+// Function to fetch all messages from the database
 const getAllMessages = (callback) => {
     db.all('SELECT * FROM messages ORDER BY timestamp', (err, rows) => {
         callback(err, rows);
     });
 };
 
-const saveMessage = (msg, callback) => {
-    db.run('INSERT INTO messages (message) VALUES (?)', [msg], function (err) {
-        callback(err, { id: this.lastID, message: msg, timestamp: new Date() });
-    });
+// Function to save a new message to the database
+const saveMessage = (data, callback) => {
+    const { recipeId, senderId, receiverId, message } = data;
+    db.run('INSERT INTO messages (recipeId, senderId, receiverId, message) VALUES (?, ?, ?, ?)',
+           [recipeId, senderId, receiverId, message],
+           function (err) {
+               if (err) {
+                   console.error('Error saving message', err);
+                   callback(err, null);
+               } else {
+                   // Retrieve the inserted message data
+                   const insertedMessage = {
+                       id: this.lastID,
+                       recipeId,
+                       senderId,
+                       receiverId,
+                       message,
+                       timestamp: new Date().toISOString() // Example: Current timestamp
+                   };
+                   callback(null, insertedMessage);
+               }
+           });
 };
 
 module.exports = {
