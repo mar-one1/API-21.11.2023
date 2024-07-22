@@ -6,16 +6,16 @@ const db = new sqlite3.Database('./DB_Notebook.db', (err) => {
         console.error('Could not connect to database', err);
     } else {
         console.log('Connected to SQLite database');
-        
+
         // Create messages table if it doesn't exist
         db.run(`CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            recipeId INTEGER,
-            senderId INTEGER,
-            receiverId INTEGER,
-            message TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )`, (err) => {
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        recipeId INTEGER,
+        senderId INTEGER,
+        receiverId INTEGER,
+        message TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`, (err) => {
             if (err) {
                 console.error('Error creating messages table', err);
             } else {
@@ -25,38 +25,51 @@ const db = new sqlite3.Database('./DB_Notebook.db', (err) => {
     }
 });
 
-// Function to fetch all messages from the database
-const getAllMessages = (callback) => {
-    db.all('SELECT * FROM messages ORDER BY timestamp', (err, rows) => {
-        callback(err, rows);
-    });
-};
+class chat {
+    constructor(
+        id,
+        recipeId,
+        senderId,
+        receiverId,
+        message,
+        timestamp
+    ) {
+        this.id = id;
+        this.recipeId = recipeId;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.message = message;
+        this.timestamp = timestamp;
+    }
 
-// Function to save a new message to the database
-const saveMessage = (data, callback) => {
-    const { recipeId, senderId, receiverId, message } = data;
-    db.run('INSERT INTO messages (recipeId, senderId, receiverId, message) VALUES (?, ?, ?, ?)',
-           [recipeId, senderId, receiverId, message],
-           function (err) {
-               if (err) {
-                   console.error('Error saving message', err);
-                   callback(err, null);
-               } else {
-                   // Retrieve the inserted message data
-                   const insertedMessage = {
-                       id: this.lastID,
-                       recipeId,
-                       senderId,
-                       receiverId,
-                       message,
-                       timestamp: new Date().toISOString() // Example: Current timestamp
-                   };
-                   callback(null, insertedMessage);
-               }
-           });
-};
-
-module.exports = {
-    getAllMessages,
-    saveMessage
-};
+    // Function to fetch all messages from the database
+    static getAllMessages(callback) {
+        db.all('SELECT * FROM messages ORDER BY timestamp', (err, rows) => {
+            callback(err, rows);
+        });
+    }
+    // Function to save a new message to the database
+    static saveMessage(data, callback) {
+        const { recipeId, senderId, receiverId, message } = data;
+        db.run('INSERT INTO messages (recipeId, senderId, receiverId, message) VALUES (?, ?, ?, ?)',
+            [recipeId, senderId, receiverId, message],
+            function (err) {
+                if (err) {
+                    console.error('Error saving message', err);
+                    callback(err, null);
+                } else {
+                    // Retrieve the inserted message data
+                    const insertedMessage = {
+                        id: this.lastID,
+                        recipeId,
+                        senderId,
+                        receiverId,
+                        message,
+                        timestamp: new Date().toISOString() // Example: Current timestamp
+                    };
+                    callback(null, insertedMessage);
+                }
+            });
+    };
+}
+module.exports = chat;
