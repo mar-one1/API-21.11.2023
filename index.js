@@ -7,9 +7,7 @@ const db = new sqlite3.Database('DB_Notebook.db'); //database file name
 const port = process.env.PORT || 3000;
 app.use(express.static('public'));
 const swaggerSetup = require('./Api/swagger');
-
-const server = http.createServer(app);
-const io = socketIo(server);
+const messageModel = require('./Api/Model/chat'); // Replace with your actual message model
 
 const { deleteUnusedImages } = require('./Api/Router/ImageHelper');
 const chatRoutes = require('./Api/Router/chat_Router');
@@ -71,37 +69,42 @@ app.use('/api', recipeModelRouter);
 app.use('/category', categoryModelRouter);
 
 // Serve Swagger UI
+// Store user socket connections
+const users = {};
+const server = http.createServer(app);
+const io = socketIo(server);
 
-// WebSocket connection handling
+const cors = require('cors');
+
+app.use(cors({
+    origin: '*', // Adjust as needed to restrict access
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
+}));
+
+
 io.on('connection', (socket) => {
   console.log('A user connected');
 
-  // Handle chat message event
   socket.on('chat message', (data) => {
-      // Handle chat message (save to database, etc.)
       console.log('Received message:', data);
-
-      // Example: Save message to database
-      messageModel.saveMessage(data, (err, savedMessage) => {
-          if (err) {
-              console.error('Error saving message', err);
-          } else {
-              // Emit message to the receiver
-              io.to(data.receiverId).emit('chat message', {
-                  senderId: data.senderId,
-                  message: data.message,
-                  timestamp: savedMessage.timestamp // Assuming savedMessage has timestamp
-              });
-          }
-      });
+      io.emit('chat message', data);
   });
 
-  // Handle disconnect event
   socket.on('disconnect', () => {
-      console.log('A user disconnected');
+      console.log('User disconnected');
   });
 });
 
+// Register route to check if a user is connected
+app.get('/isUserConnected/:userId', (req, res) => {
+  const userId = req.params.userId;
+  if (users[userId]) {
+      res.json({ connected: true });
+  } else {
+      res.json({ connected: false });
+  }
+});
 
 db.serialize(() => {
   db.run('PRAGMA foreign_keys = ON'); // Enable foreign key support (optional)

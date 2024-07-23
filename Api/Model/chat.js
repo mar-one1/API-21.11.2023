@@ -25,6 +25,8 @@ const db = new sqlite3.Database('./DB_Notebook.db', (err) => {
     }
 });
 
+
+
 class chat {
     constructor(
         id,
@@ -51,6 +53,7 @@ class chat {
     // Function to save a new message to the database
     static saveMessage(data, callback) {
         const { recipeId, senderId, receiverId, message } = data;
+        console.log(data,recipeId,senderId);
         db.run('INSERT INTO messages (recipeId, senderId, receiverId, message) VALUES (?, ?, ?, ?)',
             [recipeId, senderId, receiverId, message],
             function (err) {
@@ -59,14 +62,14 @@ class chat {
                     callback(err, null);
                 } else {
                     // Retrieve the inserted message data
-                    const insertedMessage = {
-                        id: this.lastID,
+                    const insertedMessage = new chat (
+                        this.lastID,
                         recipeId,
                         senderId,
                         receiverId,
                         message,
-                        timestamp: new Date().toISOString() // Example: Current timestamp
-                    };
+                        new Date().toISOString() // Example: Current timestamp
+                    );
                     callback(null, insertedMessage);
                 }
             });

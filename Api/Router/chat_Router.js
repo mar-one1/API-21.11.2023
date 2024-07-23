@@ -14,11 +14,11 @@ router.get('/messages', (req, res) => {
 
 // Endpoint to save a new message
 router.post('/messages', (req, res) => {
-    const msg = req.body.message;
-    if (!msg) {
+    const data = req.body;
+    if (!data) {
         return res.status(400).json({ error: 'Message text is required' });
     }
-    messageModel.saveMessage(msg, (err, message) => {
+    messageModel.saveMessage(data, (err, message) => {
         if (err) {
             return res.status(500).json({ error: 'Error saving message' });
         }
