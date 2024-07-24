@@ -5,6 +5,7 @@ const sequelize = new Sequelize({
   storage: 'DB_Notebook.db'
 });
 
+
 // Test the connection
 sequelize.authenticate()
   .then(() => {

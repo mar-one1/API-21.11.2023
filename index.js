@@ -1,17 +1,16 @@
 const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
+const http = require('http');
+const socketIo = require('socket.io');
 const db = new sqlite3.Database('DB_Notebook.db'); //database file name
 const port = process.env.PORT || 3000;
-const multer = require('multer');
-const path = require('path');
 app.use(express.static('public'));
-const mongoose = require('mongoose');
 const swaggerSetup = require('./Api/swagger');
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./Api/swagger');
+const messageModel = require('./Api/Model/chat'); // Replace with your actual message model
 
 const { deleteUnusedImages } = require('./Api/Router/ImageHelper');
+const chatRoutes = require('./Api/Router/chat_Router');
 const authRouter = require('./Api/Router/auth_Router');
 // Import the verifyToken middleware
 const verifyToken = require('./Api/Middleware/verifyToken'); // Adjust the path as needed
@@ -27,12 +26,14 @@ const favRouter = require('./Api/Router/fav_user_recipe_Router');
 const recipeModelRouter = require('./Api/Repo/recipeModelRouter');
 const categoryModelRouter = require('./Api/Router/category_Router');
 
+
+
 app.delete('/cleanup-images', async (req, res) => {
   try {
-      const result = await deleteUnusedImages();
-      res.status(200).json(result);
+    const result = await deleteUnusedImages();
+    res.status(200).json(result);
   } catch (err) {
-      res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -53,6 +54,7 @@ swaggerSetup(app);
 
 
 app.use('/users', usersRouter);
+app.use('/api/chat', chatRoutes);
 app.use('/auth', authRouter);
 // Apply the middleware to all routes
 app.use(verifyToken);
@@ -61,15 +63,48 @@ app.use('/detailrecipes', detailRecipeRouter);
 app.use('/ingredientrecipes', ingredientRecipeRouter);
 app.use('/steprecipes', stepRecipeRouter);
 app.use('/reviewrecipes', reviewRecipeRouter);
-app.use('/produits',produitRouter);
-app.use('/favorites',favRouter);
+app.use('/produits', produitRouter);
+app.use('/favorites', favRouter);
 app.use('/api', recipeModelRouter);
 app.use('/category', categoryModelRouter);
+
 // Serve Swagger UI
+// Store user socket connections
+const users = {};
+const server = http.createServer(app);
+const io = socketIo(server);
+
+const cors = require('cors');
+
+app.use(cors({
+    origin: '*', // Adjust as needed to restrict access
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
+}));
 
 
+io.on('connection', (socket) => {
+  console.log('A user connected');
 
+  socket.on('chat message', (data) => {
+      console.log('Received message:', data);
+      io.emit('chat message', data);
+  });
 
+  socket.on('disconnect', () => {
+      console.log('User disconnected');
+  });
+});
+
+// Register route to check if a user is connected
+app.get('/isUserConnected/:userId', (req, res) => {
+  const userId = req.params.userId;
+  if (users[userId]) {
+      res.json({ connected: true });
+  } else {
+      res.json({ connected: false });
+  }
+});
 
 db.serialize(() => {
   db.run('PRAGMA foreign_keys = ON'); // Enable foreign key support (optional)
@@ -79,7 +114,7 @@ db.serialize(() => {
       console.error('Error connecting to the database:', err.message);
     } else {
       console.log('Connected to the database.');
-      
+
       // You can perform your database operations here
     }
   });
@@ -88,25 +123,25 @@ db.serialize(() => {
 // Connect to your MongoDB database
 //mongoose.connect('mongodb://127.0.0.1:27017/db_note', { useNewUrlParser: true, useUnifiedTopology: true });
 
-  // Example: Protect a route using the verifyToken middleware
-  app.get('/protected', verifyToken, (req, res) => {
-    // Check if token was refreshed
+// Example: Protect a route using the verifyToken middleware
+app.get('/protected', verifyToken, (req, res) => {
+  // Check if token was refreshed
   if (req.tokenRefreshed) {
     // If token was refreshed, respond with the new token
-    res.status(201).json({ message: 'This route is protected token was refreshed', user: req.user, token: req.newAccessToken});
+    res.status(201).json({ message: 'This route is protected token was refreshed', user: req.user, token: req.newAccessToken });
   } else {
     // If token was valid, proceed with the endpoint logic
     // Your endpoint logic here...
-    res.status(200).json({ message: 'This route is protected', user: req.user, token: req.newAccessToken});
+    res.status(200).json({ message: 'This route is protected', user: req.user, token: req.newAccessToken });
   }
-    
-  });
+
+});
 
 
 // Serving static files from the 'public' directory
 
 
- 
+
 // const server = http.createServer((req, res) => {
 //   res.statusCode = 200;
 //   res.setHeader('Content-Type', 'text/plain');
