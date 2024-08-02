@@ -45,6 +45,30 @@ class chat {
     }
 
     // Function to fetch all messages from the database
+    static getMessagesByRecipe(id,callback) {
+        db.all('SELECT * FROM messages where recipeId = ?  ORDER BY timestamp',
+            [id],
+            function (err, rows) {
+              if (err) {
+                db.close();
+                callback(err);
+                return;
+              }
+                const chats = rows.map((row) => {
+                    return new chat(
+                      row.id,
+                      row.recipeId,
+                      row.senderId,
+                      row.receiverId,
+                      row.message,
+                      row.timestamp
+                    );
+                  });
+                  callback(null, chats);
+                });
+    }
+
+    // Function to fetch all messages from the database
     static getAllMessages(callback) {
         db.all('SELECT * FROM messages ORDER BY timestamp', (err, rows) => {
             callback(err, rows);
