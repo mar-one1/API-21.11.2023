@@ -11,17 +11,6 @@ router.get('/messages', (req, res) => {
         res.json(messages);
     });
 });
-// Endpoint to get messages by recipe id
-router.get('/messages/:recipeId', (req, res) => {
-    const id = req.params.recipeId;
-    console.log(id);
-    messageModel.getMessagesByRecipe(id, (err, messages) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error fetching messages' });
-        }
-        res.json(messages);
-    });
-});
 
 // Endpoint to save a new message
 router.post('/messages', (req, res) => {
