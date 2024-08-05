@@ -158,7 +158,7 @@ app.use(cors({
   origin: '*', // Allow all origins for testing
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'token']
-}));
+}));  
 
 
 // Connect to your MongoDB database

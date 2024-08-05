@@ -7,26 +7,27 @@ const StepModel = require("./Step_recipe"); // Import the User model
 const imageHelper = require("../Router/ImageHelper"); // Import the User model
 const fs = require("fs");
 class Recipe {
-  constructor(id, name, icon, fav, userId) {
+  constructor(id, name, icon, fav,unique_key, userId) {
     this.id = id;
     this.name = name;
     this.icon = icon;
     this.fav = fav;
+    this.unique_key = unique_key;
     this.userId = userId;
   }
 
-  static createRecipe(name, icon, fav, userId, callback) {
+  static createRecipe(name, icon, fav, unique, userId, callback) {
     const db = new sqlite3.Database("DB_Notebook.db");
     try {
       db.run(
-        "INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe, Frk_user) VALUES (?, ?, ?, ?)",
-        [name, icon, fav, userId],
+        "INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe,unique_key_recipe, Frk_user) VALUES (?, ?, ?, ?)",
+        [name, icon, fav, unique, userId],
         function (err) {
           if (err) {
             callback(err);
             return;
           }
-          const newRecipe = new Recipe(this.lastID, name, icon, fav, userId);
+          const newRecipe = new Recipe(this.lastID, name, icon, fav, unique, userId);
           callback(null, newRecipe);
         }
       );
@@ -83,6 +84,7 @@ class Recipe {
           row.Nom_Recipe,
           row.Icon_recipe,
           row.Fav_recipe,
+          row.unique_key_recipe,
           row.Frk_user
         );
         callback(null, recipe);
@@ -143,6 +145,7 @@ class Recipe {
                   name: row.Nom_Recipe,
                   icon: row.Icon_recipe,
                   fav: row.Fav_recipe,
+                  unique_key: row.unique_key_recipe,
                 },
 
                 detail_recipe: {
@@ -224,8 +227,8 @@ class Recipe {
           recipeData;
 
         db.run(
-          `INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe, Frk_user) VALUES (?, ?, ?, ?)`,
-          [recipe.name, recipe.icon, recipe.fav, recipe.userId],
+          `INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe,unique_key_recipe, Frk_user) VALUES (?, ?, ?, ?)`,
+          [recipe.name, recipe.icon, recipe.fav,recipe.unique_key, recipe.userId],
           function (err) {
             if (err) {
               db.run("ROLLBACK");
@@ -438,6 +441,7 @@ class Recipe {
               name: row.Nom_Recipe,
               icon: row.Icon_recipe,
               fav: row.Fav_recipe,
+              unique_key: row.unique_key_recipe,
               userId: row.Frk_user,
             })
           );
@@ -499,6 +503,7 @@ class Recipe {
           rows[0].Nom_Recipe,
           rows[0].Icon_recipe,
           rows[0].Fav_recipe,
+          rows[0].unique_key_recipe,
           rows[0].Frk_user
         );
 
@@ -643,6 +648,7 @@ class Recipe {
             row.Nom_Recipe,
             row.Icon_recipe,
             row.Fav_recipe,
+            row.unique_key_recipe,
             row.Frk_user
           );
         });
@@ -697,6 +703,7 @@ class Recipe {
           row.Nom_Recipe,
           row.Icon_recipe,
           row.Fav_recipe,
+          row.unique_key_recipe,
           row.Frk_user
         );
       });
@@ -731,6 +738,7 @@ class Recipe {
             row.Nom_Recipe,
             row.Icon_recipe,
             row.Fav_recipe,
+            row.unique_key_recipe,
             row.Frk_user
           );
         });
@@ -757,6 +765,7 @@ class Recipe {
             row.Nom_Recipe,
             row.Icon_recipe,
             row.Fav_recipe,
+            row.unique_key_recipe,
             row.Frk_user
           );
         });

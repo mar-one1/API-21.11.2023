@@ -38,12 +38,6 @@ class chat {
     this.timestamp = timestamp;
   }
 
-<<<<<<< HEAD
-    // Function to fetch all messages from the database
-    static getAllMessages(callback) {
-        db.all('SELECT * FROM messages ORDER BY timestamp', (err, rows) => {
-            callback(err, rows);
-=======
   // Function to fetch all messages from the database
   static getMessagesByRecipe(id, callback) {
     db.all(
@@ -64,7 +58,6 @@ class chat {
             row.message,
             row.timestamp
           );
->>>>>>> 1286878c7b236f92831fd3df760f545e9e12eeeb
         });
         callback(null, chats);
       }
