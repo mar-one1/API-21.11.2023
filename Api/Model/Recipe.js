@@ -83,7 +83,7 @@ class Recipe {
           row.Id_recipe,
           row.Nom_Recipe,
           row.Icon_recipe,
-          row.Fav_recipe,
+          row.Fav_recipe, 
           row.unique_key_recipe,
           row.Frk_user
         );
