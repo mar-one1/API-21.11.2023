@@ -7,7 +7,7 @@ const StepModel = require("./Step_recipe"); // Import the User model
 const imageHelper = require("../Router/ImageHelper"); // Import the User model
 const fs = require("fs");
 class Recipe {
-  constructor(id, name, icon, fav,unique_key, userId) {
+  constructor(id, name, icon, fav, unique_key, userId) {
     this.id = id;
     this.name = name;
     this.icon = icon;
@@ -16,18 +16,18 @@ class Recipe {
     this.userId = userId;
   }
 
-  static createRecipe(name, icon, fav, unique, userId, callback) {
+  static createRecipe(name, icon, fav, unique_key, userId, callback) {
     const db = new sqlite3.Database("DB_Notebook.db");
     try {
       db.run(
-        "INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe,unique_key_recipe, Frk_user) VALUES (?, ?, ?, ?)",
-        [name, icon, fav, unique, userId],
+        "INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe, unique_key_recipe, Frk_user) VALUES (?, ?, ?, ?, ?)",
+        [name, icon, fav, unique_key, userId],
         function (err) {
           if (err) {
             callback(err);
             return;
           }
-          const newRecipe = new Recipe(this.lastID, name, icon, fav, unique, userId);
+          const newRecipe = new Recipe(this.lastID, name, icon, fav, unique_key, userId);
           callback(null, newRecipe);
         }
       );
@@ -227,8 +227,8 @@ class Recipe {
           recipeData;
 
         db.run(
-          `INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe,unique_key_recipe, Frk_user) VALUES (?, ?, ?, ?)`,
-          [recipe.name, recipe.icon, recipe.fav,recipe.unique_key, recipe.userId],
+          `INSERT INTO Recipe (Nom_Recipe, Icon_recipe, Fav_recipe, unique_key_recipe, Frk_user) VALUES (?, ?, ?, ?, ?)`,
+          [recipe.name, recipe.icon, recipe.fav, recipe.unique_key, recipe.userId],
           function (err) {
             if (err) {
               db.run("ROLLBACK");

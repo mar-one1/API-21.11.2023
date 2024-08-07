@@ -21,7 +21,7 @@ const upload = multer({ dest: "uploads/", storage: storage });
 
 // Create a recipe
 router.post("/", validateRecipe.validateCreateRecipe, async (req, res) => {
-  const { name, icon, fav, userId } = req.body;
+  const { name, icon, fav,unique_key, userId } = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -29,7 +29,9 @@ router.post("/", validateRecipe.validateCreateRecipe, async (req, res) => {
   console.log(name);
   console.log(icon);
   console.log(fav);
-  Recipe.createRecipe(name, icon, fav, userId, (err, newRecipe) => {
+  console.log(unique_key);
+
+  Recipe.createRecipe(name, icon, fav, unique_key, userId, (err, newRecipe) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
