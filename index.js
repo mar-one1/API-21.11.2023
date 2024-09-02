@@ -93,28 +93,31 @@ io.on('connection', (socket) => {
 
   // Handle chat message event
   socket.on('chat message', (data) => {
-      console.log('Received message:', data);
+    console.log('Received message:', data);
 
-      // Save message to the database
-      messageModel.saveMessage(data, (err, savedMessage) => {
-          if (err) {
-              console.error('Error saving message', err);
-          } else {
-              console.log('Message saved:', savedMessage);
-              // Emit message to the receiver if they are connected
-              const receiverSocketId = users[data.receiverId];
-              if (receiverSocketId) {
-                  io.to(receiverSocketId).emit('chat message', {
-                      senderId: data.senderId,
-                      message: data.message,
-                      timestamp: savedMessage.timestamp
-                  });
-              } else {
-                  console.log(`User ${data.receiverId} is not connected`);
-              }
-          }
-      });
-  });
+    // Save message to the database
+    messageModel.saveMessage(data, (err, savedMessage) => {
+        if (err) {
+            console.error('Error saving message', err);
+        } else {
+            console.log('Message saved:', savedMessage);
+
+            // Emit message to the receiver if they are connected
+            const receiverSocketId = users[data.receiverId];
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit('chat message', {
+                    recipeId: data.recipeId,
+                    senderId: data.senderId,
+                    receiverId: data.receiverId,
+                    message: data.message,
+                    timestamp: savedMessage.timestamp
+                });
+            } else {
+                console.log(`User ${data.receiverId} is not connected`);
+            }
+        }
+    });
+});
 
   // Handle disconnect event
   socket.on('disconnect', () => {
@@ -137,7 +140,7 @@ app.get('/isUserConnected/:userId', (req, res) => {
       res.json({ connected: true });
   } else {
       res.json({ connected: false });
-  }
+  } 
 });
 
 db.serialize(() => {
