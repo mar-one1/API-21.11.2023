@@ -71,7 +71,17 @@ app.use('/favorites', favRouter);
 app.use('/api', recipeModelRouter);
 app.use('/category', categoryModelRouter);
 
-const io = require('socket.io')(server);
+/*const io = require('socket.io')(server, {
+  cors: {
+      origin: "*",  // Allow all origins or set specific origins
+      methods: ["GET", "POST"]
+  }
+});*/
+const io = require('socket.io')(server, {
+  pingTimeout: 60000, // 60 seconds ping timeout
+  pingInterval: 25000, // 25 seconds ping interval
+});
+
 io.on('connection', () => { /* … */ });
 server.listen(3000);
 // Serve Swagger UI
@@ -81,6 +91,7 @@ io.use((socket, next) => {
   console.log('Socket handshake:', socket.handshake);
   next();
 });
+
 
 io.on('connection', (socket) => {
   console.log(socket.id+': user connected');
