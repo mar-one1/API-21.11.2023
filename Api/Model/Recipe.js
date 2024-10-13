@@ -775,6 +775,131 @@ class Recipe {
     db.close();
   }
 
+  static updateRecipeWithDetails(recipeData, callback) {
+    const db = new sqlite3.Database("DB_Notebook.db");
+  
+    db.serialize(() => {
+      db.run("BEGIN TRANSACTION");
+  
+      try {
+        const { recipe, detail_recipe, ingredients, reviews, steps } = recipeData;
+  
+        db.run(
+          `UPDATE Recipe 
+           SET Nom_Recipe = ?, Icon_recipe = ?, Fav_recipe = ?, Frk_user = ? 
+           WHERE unique_key_recipe = ?`,
+          [recipe.name, recipe.icon, recipe.fav, recipe.userId, recipe.unique_key],
+          function (err) {
+            if (err) {
+              db.run("ROLLBACK");
+              console.error("Error updating recipe:", err);
+              return callback(err);
+            }
+  
+            const uniqueKey = recipe.unique_key;
+  
+            db.run(
+              `UPDATE Detail_recipe 
+               SET Dt_recipe = ?, Dt_recipe_time = ?, Rate_recipe = ?, Level_recipe = ?, Calories_recipe = ? 
+               WHERE FRK_recipe = (SELECT Recipe_ID FROM Recipe WHERE unique_key_recipe = ?)`,
+              [
+                detail_recipe.detail,
+                detail_recipe.time,
+                detail_recipe.rate,
+                detail_recipe.level,
+                detail_recipe.calories,
+                uniqueKey,
+              ],
+              function (err) {
+                if (err) {
+                  db.run("ROLLBACK");
+                  console.error("Error updating detail recipe:", err);
+                  return callback(err);
+                }
+  
+                // Update ingredients
+                Recipe.updateIngredients(db, ingredients, uniqueKey, (err) => {
+                  if (err) {
+                    db.run("ROLLBACK");
+                    console.error("Error updating ingredients:", err);
+                    return callback(err);
+                  }
+  
+                  // Update steps
+                  Recipe.updateSteps(db, steps, uniqueKey, (err) => {
+                    if (err) {
+                      db.run("ROLLBACK");
+                      console.error("Error updating steps:", err);
+                      return callback(err);
+                    }
+  
+                    // Commit transaction
+                    db.run("COMMIT", function (err) {
+                      if (err) {
+                        console.error("Error committing transaction:", err);
+                        return callback(err);
+                      }
+                      console.log(
+                        "Recipe updated successfully with unique key:",
+                        uniqueKey
+                      );
+                      callback(null, uniqueKey);
+                    });
+                  });
+                });
+              }
+            );
+          }
+        );
+      } catch (err) {
+        db.run("ROLLBACK");
+        console.error("Error updating recipe:", err);
+        callback(err);
+      }
+    });
+  }
+
+  static updateIngredients(db, ingredients, uniqueKey, callback) {
+    try {
+      db.run(
+        `DELETE FROM Ingredient WHERE FRK_recipe = (SELECT Recipe_ID FROM Recipe WHERE unique_key_recipe = ?)`,
+        [uniqueKey],
+        (err) => {
+          if (err) {
+            return callback(err);
+          }
+  
+          // Insert new ingredients after deletion
+          Recipe.insertIngredients(db, ingredients, uniqueKey, callback);
+        }
+      );
+    } catch (err) {
+      console.error("Error updating Ingredients", err);
+      callback(err, null);
+    }
+  }
+  
+  static updateSteps(db, steps, uniqueKey, callback) {
+    try {
+      db.run(
+        `DELETE FROM Step_recipe WHERE FRK_recipe = (SELECT Recipe_ID FROM Recipe WHERE unique_key_recipe = ?)`,
+        [uniqueKey],
+        (err) => {
+          if (err) {
+            return callback(err);
+          }
+  
+          // Insert new steps after deletion
+          Recipe.insertSteps(db, steps, uniqueKey, callback);
+        }
+      );
+    } catch (err) {
+      console.error("Error updating Steps", err);
+      callback(err, null);
+    }
+  }
+  
+
   static deleteRecipe(recipeId, callback) {
     const db = new sqlite3.Database("DB_Notebook.db");
     db.run(

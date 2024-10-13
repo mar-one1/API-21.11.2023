@@ -207,6 +207,18 @@ router.get("/search/nom", (req, res) => {
   });
 });
 
+router.put('/', (req, res) => {
+  const recipeData = req.body;
+
+  Recipe.updateRecipeWithDetails(recipeData, (err, recipeId) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to update recipe' });
+    }
+    res.json({ success: true, recipeId });
+  });
+});
+
+
 // DELETE route to delete a recipe by ID
 router.delete("/:id", validateRecipe.validateDeleteRecipe, (req, res) => {
   const recipeId = req.params.id;
