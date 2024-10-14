@@ -801,7 +801,7 @@ class Recipe {
             db.run(
               `UPDATE Detail_recipe 
                SET Dt_recipe = ?, Dt_recipe_time = ?, Rate_recipe = ?, Level_recipe = ?, Calories_recipe = ? 
-               WHERE FRK_recipe = (SELECT Recipe_ID FROM Recipe WHERE unique_key_recipe = ?)`,
+               WHERE FRK_recipe = (SELECT Id_recipe FROM Recipe WHERE unique_key_recipe = ?)`,
               [
                 detail_recipe.detail,
                 detail_recipe.time,
@@ -862,7 +862,7 @@ class Recipe {
   static updateIngredients(db, ingredients, uniqueKey, callback) {
     try {
       db.run(
-        `DELETE FROM Ingredient WHERE FRK_recipe = (SELECT Recipe_ID FROM Recipe WHERE unique_key_recipe = ?)`,
+        `DELETE FROM Ingredient WHERE FRK_recipe = (SELECT Id_recipe FROM Recipe WHERE unique_key_recipe = ?)`,
         [uniqueKey],
         (err) => {
           if (err) {
@@ -882,7 +882,7 @@ class Recipe {
   static updateSteps(db, steps, uniqueKey, callback) {
     try {
       db.run(
-        `DELETE FROM Step_recipe WHERE FRK_recipe = (SELECT Recipe_ID FROM Recipe WHERE unique_key_recipe = ?)`,
+        `DELETE FROM Step_recipe WHERE FRK_recipe = (SELECT Id_recipe FROM Recipe WHERE unique_key_recipe = ?)`,
         [uniqueKey],
         (err) => {
           if (err) {
