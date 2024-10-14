@@ -798,55 +798,68 @@ class Recipe {
   
             const uniqueKey = recipe.unique_key;
   
-            db.run(
-              `UPDATE Detail_recipe 
-               SET Dt_recipe = ?, Dt_recipe_time = ?, Rate_recipe = ?, Level_recipe = ?, Calories_recipe = ? 
-               WHERE FRK_recipe = (SELECT Id_recipe FROM Recipe WHERE unique_key_recipe = ?)`,
-              [
-                detail_recipe.detail,
-                detail_recipe.time,
-                detail_recipe.rate,
-                detail_recipe.level,
-                detail_recipe.calories,
-                uniqueKey,
-              ],
-              function (err) {
-                if (err) {
+            // Retrieve the recipe ID using the unique_key_recipe
+            db.get(
+              `SELECT Id_recipe FROM Recipe WHERE unique_key_recipe = ?`,
+              [uniqueKey],
+              (err, row) => {
+                if (err || !row) {
                   db.run("ROLLBACK");
-                  console.error("Error updating detail recipe:", err);
-                  return callback(err);
+                  console.error("Error retrieving recipe ID:", err);
+                  return callback(err || new Error("Recipe not found"));
                 }
   
-                // Update ingredients
-                Recipe.updateIngredients(db, ingredients, uniqueKey, (err) => {
-                  if (err) {
-                    db.run("ROLLBACK");
-                    console.error("Error updating ingredients:", err);
-                    return callback(err);
-                  }
+                const recipeId = row.Id_recipe;
   
-                  // Update steps
-                  Recipe.updateSteps(db, steps, uniqueKey, (err) => {
+                // Update detail recipe
+                db.run(
+                  `UPDATE Detail_recipe 
+                   SET Dt_recipe = ?, Dt_recipe_time = ?, Rate_recipe = ?, Level_recipe = ?, Calories_recipe = ? 
+                   WHERE FRK_recipe = ?`,
+                  [
+                    detail_recipe.detail,
+                    detail_recipe.time,
+                    detail_recipe.rate,
+                    detail_recipe.level,
+                    detail_recipe.calories,
+                    recipeId,
+                  ],
+                  function (err) {
                     if (err) {
                       db.run("ROLLBACK");
-                      console.error("Error updating steps:", err);
+                      console.error("Error updating detail recipe:", err);
                       return callback(err);
                     }
   
-                    // Commit transaction
-                    db.run("COMMIT", function (err) {
+                    // Update ingredients
+                    Recipe.updateIngredients(db, ingredients, recipeId, (err) => {
                       if (err) {
-                        console.error("Error committing transaction:", err);
+                        db.run("ROLLBACK");
+                        console.error("Error updating ingredients:", err);
                         return callback(err);
                       }
-                      console.log(
-                        "Recipe updated successfully with unique key:",
-                        uniqueKey
-                      );
-                      callback(null, uniqueKey);
+  
+                      // Update steps
+                      Recipe.updateSteps(db, steps, recipeId, (err) => {
+                        if (err) {
+                          db.run("ROLLBACK");
+                          console.error("Error updating steps:", err);
+                          return callback(err);
+                        }
+  
+                        // Commit transaction
+                        db.run("COMMIT", function (err) {
+                          if (err) {
+                            console.error("Error committing transaction:", err);
+                            return callback(err);
+                          }
+                          console.log("Recipe updated successfully with unique key:", uniqueKey);
+                          callback(null, uniqueKey);
+                        });
+                      });
                     });
-                  });
-                });
+                  }
+                );
               }
             );
           }
@@ -858,19 +871,19 @@ class Recipe {
       }
     });
   }
-
-  static updateIngredients(db, ingredients, uniqueKey, callback) {
+  
+  static updateIngredients(db, ingredients, recipeId, callback) {
     try {
       db.run(
-        `DELETE FROM Ingredient WHERE FRK_recipe = (SELECT Id_recipe FROM Recipe WHERE unique_key_recipe = ?)`,
-        [uniqueKey],
+        `DELETE FROM Ingredient WHERE FRK_recipe = ?`,
+        [recipeId],
         (err) => {
           if (err) {
             return callback(err);
           }
   
           // Insert new ingredients after deletion
-          Recipe.insertIngredients(db, ingredients, uniqueKey, callback);
+          Recipe.insertIngredients(db, ingredients, recipeId, callback);
         }
       );
     } catch (err) {
@@ -879,18 +892,18 @@ class Recipe {
     }
   }
   
-  static updateSteps(db, steps, uniqueKey, callback) {
+  static updateSteps(db, steps, recipeId, callback) {
     try {
       db.run(
-        `DELETE FROM Step_recipe WHERE FRK_recipe = (SELECT Id_recipe FROM Recipe WHERE unique_key_recipe = ?)`,
-        [uniqueKey],
+        `DELETE FROM Step_recipe WHERE FRK_recipe = ?`,
+        [recipeId],
         (err) => {
           if (err) {
             return callback(err);
           }
   
           // Insert new steps after deletion
-          Recipe.insertSteps(db, steps, uniqueKey, callback);
+          Recipe.insertSteps(db, steps, recipeId, callback);
         }
       );
     } catch (err) {
@@ -898,6 +911,7 @@ class Recipe {
       callback(err, null);
     }
   }
+  
   
 
   static deleteRecipe(recipeId, callback) {
