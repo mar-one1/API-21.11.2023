@@ -214,7 +214,7 @@ router.put('/', (req, res) => {
     if (err) {
       return res.status(500).json({ error: 'Failed to update recipe' });
     }
-    res.json({ success: true, recipeId });
+    res.json(recipeId);
   });
 });
 

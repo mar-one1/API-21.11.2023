@@ -606,12 +606,12 @@ class Recipe {
     }
   }
 
-  static async UpdateRecipeImage(id, imagebyte, callback) {
+  static async UpdateRecipeImage(unique, imagebyte, callback) {
     const db = new sqlite3.Database("DB_Notebook.db");
     try {
       db.run(
-        "UPDATE Recipe SET Icon_recipe = ? WHERE Id_recipe = ?",
-        [imagebyte, id],
+        "UPDATE Recipe SET Icon_recipe = ? WHERE unique_key_recipe = ?",
+        [imagebyte, unique],
         function (err) {
           if (err) {
             callback(err);
@@ -622,14 +622,14 @@ class Recipe {
             return;
           }
           // If the user doesn't exist, add them to the database
-          callback(null, imagebyte);
+          callback(null, imagebyte);  
           console.log(imagebyte);
         }
       );
       db.close();
     } catch (err) {
       db.close();
-      console.error("Error Update Recipe Image : " + id, err);
+      console.error("Error Update Recipe Image : " + unique, err);
       callback(err, null);
     }
   }
