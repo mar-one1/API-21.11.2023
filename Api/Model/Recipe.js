@@ -788,7 +788,7 @@ class Recipe {
           `UPDATE Recipe 
            SET Nom_Recipe = ?, Icon_recipe = ?, Fav_recipe = ?, Frk_user = ? 
            WHERE unique_key_recipe = ?`,
-          [recipe.name, recipe.icon, recipe.fav, recipe.userId, recipe.unique_key],
+          [recipe.name, recipe.icon, recipe.fav, recipe.unique_key],
           function (err) {
             if (err) {
               db.run("ROLLBACK");
